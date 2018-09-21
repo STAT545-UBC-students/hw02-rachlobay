@@ -723,13 +723,6 @@ Here is a screenshot of the rgl 3D scatterplot:
 
 ![3D rgl scatterplot](3d_rgl_scatterplot.png)
 
-
-```r
-persp(volcano, theta = 25, phi = 30, expand = 0.5, col = "lightblue")
-```
-
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
-
 Now, I will examine a plot of one quantitative variable. I shall look at a dotplot of the fares
 
 
@@ -741,7 +734,7 @@ ggplot(titanic, aes(fare)) + geom_density() + labs(x = "fare", y = "frequency",t
 ## Warning: Removed 2 rows containing non-finite values (stat_density).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
 We can see from the densityplot that the highest frequency of passengers paid under $50 dollars for their tickets. 
 
 I will now colour a density plot of passenger fares by class. Note that I will first have to convert pclass to a factor because it is originally an integer (as indicated by typeof and class in the Smell test the data section). In order for ggplot to fill by class, the variable cannot be an integer.
@@ -759,7 +752,7 @@ ggplot.fare.class + geom_density() + labs(x = "fare", y = "frequency",title = "D
 ## Warning: Removed 2 rows containing non-finite values (stat_density).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
 
 From this densityplot of fares by class, we can see that the majority of people who paid under fifty dollars for a ticket were from first class. This observation makes sense because we would expect that third class passengers paid less than first class passengers. Also, we can see that only the first class passengers had higher fares over 100 dollars.
 
@@ -776,7 +769,7 @@ ggplot.fare.class +
 ## Warning: Removed 2 rows containing non-finite values (stat_bin).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
 We can see that as the fare increases, the number of first class passenger increases. This makes sense because first class passengers were required to pay a higher fare than third class passengers. The luxuries of first class ain't cheap.
 
@@ -797,7 +790,7 @@ ggplot(titanic, aes(class,age)) + geom_violin() +
 ## Warning: Removed 264 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
 
 From the jitterplots overlayed over top of the violin plots, we can see that a higher concentration of passengers were in third class. Furthermore, the age of passengers in all the classes were concentrated between 20 - 40 years of age. First class appears to have the greatest range in age (ie. the ages are more dispersed than for the second and third classes). First class doesn't have the major concentration of people in the 20 to 40 year age range that second and third class do. 
 
@@ -814,7 +807,7 @@ titanic %>%
   labs(title = "Segmented barplot of survival of first class passengers coloured by sex", x = "Survival (0 = died, 1 = survived)", y = "Count")
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 
 We can see from the segmented bar plot that the majority of first class females survived, whereas the majority of males died. That said, more males survived than for third class as we will see below...
 
@@ -827,7 +820,7 @@ titanic %>%
   labs(title = "Segmented barplot of survival of third class passengers coloured by sex", x = "Survival (0 = died, 1 = survived)", y = "Count")
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
 
 Quite a difference from the first class results, especially for the females! We can see that roughly half the females in third class died. For the males in first class, almost half of the males survived, whereas for third class the vast majority died.
 
@@ -851,7 +844,7 @@ titanic %>%
 ## Warning: Removed 19 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
  
 What do we see in the above scatterplot? 
 
@@ -877,7 +870,7 @@ titanic %>%
 ## Warning: Removed 50 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
 
 First, I will discuss some observations on the scatterplot of survival of third class passengers coloured by sex. It looks as though there are slightly more females than males who survived (which confirms our above segmented bar graph observations). However, both the males and females who survived are similarly dispersed. The major concentration of both males and females are within 0 - 40 years of age and paid 7 - 20 dollars for their fare. 
 
@@ -922,7 +915,7 @@ titanic %>%
 ## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
 
 
 We can see from this dotplot that, aside from the passengers who did not list a home/destination (of which there were many), the greatest frequency of passengers who died were females who were heading from Sweden to Winnipeg, Manitoba. 

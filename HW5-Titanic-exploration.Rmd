@@ -336,10 +336,6 @@ Here is a screenshot of the rgl 3D scatterplot:
 
 ![3D rgl scatterplot](3d_rgl_scatterplot.png)
 
-```{r}
-persp(volcano, theta = 25, phi = 30, expand = 0.5, col = "lightblue")
-```
-
 Now, I will examine a plot of one quantitative variable. I shall look at a dotplot of the fares
 
 ```{r}
