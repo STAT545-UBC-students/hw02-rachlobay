@@ -722,8 +722,7 @@ The interactive 3D plot from rgl will not show up in Github. After downloading, 
 
 Here is a screenshot of the rgl 3D scatterplot:
 
-
-
+![3D rgl scatterplot](3d_rgl_scatterplot.png)
 
 
 ```r
