@@ -11,28 +11,31 @@ output:
 
 ## Introduction 
 
-My goal is to explore the Titanic data set, which may be obtained from the titanic package. This data set has info. from 1309 passengers that were on the Titanic.
+My goal is to explore the Titanic data set, which I download as an .xls document from (here)[https://www.google.ca/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=2ahUKEwiZ2JuGo8vdAhVJzVQKHdh8A2UQFjABegQICRAC&url=http%3A%2F%2Fbiostat.mc.vanderbilt.edu%2Fwiki%2Fpub%2FMain%2FDataSets%2Ftitanic3.xls&usg=AOvVaw1j63KEb1daRf8kqotv9b7B]. I converted the .xls file to a .csv file in Excel. Now, this data set has info. from 1309 passengers who were onboard the Titanic.
 
 First, I will try to test the data by examining its class, dimensions and its variables. Then, I will look at various plots. I will use dplyr and ggplot2 for data description and visualization. Finally, I will demonstrate that I have mastered filter(), select() and %>%.
 
 ## Smell test the data
 
-Assuming tidyverse is already installed, simply load tidyverse using the R code in the code block below.
+If you do not have the tidyverse or kableExtra packages installed, simply type install.packages("tidyverse") or install.packages("kableExtra") **before** typing library(tidyverse).
 
-If you do not have tidyverse installed as we did in class, simply type install.packages("tidyverse") **before** typing library(tidyverse).
+Now, assuming tidyverse and kableExtra have been installed, simply load them using the R code in the code block below.
 
 ```{r}
 library(tidyverse) # load tidyverse
+library(kableExtra) # load kableExtra package, which I will use for building tables later on
 ```
+
+Next, I will read the titanic.csv in. Note that I put the titanic.csv in this github repo (here)[https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic.csv].
 
 ```{r}
-titanic <- read.csv("titanic.csv")
+titanic <- read.csv("titanic.csv") # read titanic.csv in
 ```
-
 
 To see that our data set got imported properly into R Studio (ie. so that the structure is what we expect), I will peak at the head of the data set.
+
 ```{r}
-head(titanic) # To see the top rows of the Titanic data set
+head(titanic) # See the top six rows of the Titanic data set
 ```
 
 I will also look at the tail to make sure nothing is amiss with the last few rows of the data set. 
@@ -464,3 +467,7 @@ filter(gapminder, country %in% c("Rwanda", "Afghanistan"))
 ```
 
 Now, the correct output is produced. We have a total of 24 rows, 12 of which are for Afghanistan and 12 are for Rwanda. Case closed. 
+
+
+
+
