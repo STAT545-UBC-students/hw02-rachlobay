@@ -784,7 +784,7 @@ titanic %>%
       geom_dotplot() + 
       labs(title = "Popular home/destinations for the adult passengers who died on Titanic", x =
            "Home / Destination", y = "Frequency") +
-      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+      theme(axis.text.x = element_text(angle = 90, hjust = 1)) # this rotates the x-axis home.dest labels to 90 degrees so that they are all clearly visible (othewise they would overlap if left unrotated)
 ```
 
 ```
@@ -800,3 +800,169 @@ titanic %>%
 
 
 We can see from this dotplot that, aside from the passengers who did not list a home/destination (of which there were many), the greatest frequency of passengers who died were females who were heading from Sweden to Winnipeg, Manitoba. 
+
+## But I want to do more
+
+First, I will load the library gapminder package. Note that you must install gapminder first before you use the library() function to load it.
+
+
+```r
+library(gapminder) # load gapminder package
+```
+
+Use the head function to peak at the gapminder data set before moving on to the problem.
+
+
+```r
+head(gapminder) # view top six rows of gapminder data set
+```
+
+```
+## # A tibble: 6 x 6
+##   country     continent  year lifeExp      pop gdpPercap
+##   <fct>       <fct>     <int>   <dbl>    <int>     <dbl>
+## 1 Afghanistan Asia       1952    28.8  8425333      779.
+## 2 Afghanistan Asia       1957    30.3  9240934      821.
+## 3 Afghanistan Asia       1962    32.0 10267083      853.
+## 4 Afghanistan Asia       1967    34.0 11537966      836.
+## 5 Afghanistan Asia       1972    36.1 13079460      740.
+## 6 Afghanistan Asia       1977    38.4 14880372      786.
+```
+
+Next, I am supposed to evaluate the following code block and describe the result. 
+
+
+```r
+filter(gapminder, country == c("Rwanda","Afghanistan"))
+```
+
+```
+## # A tibble: 12 x 6
+##    country     continent  year lifeExp      pop gdpPercap
+##    <fct>       <fct>     <int>   <dbl>    <int>     <dbl>
+##  1 Afghanistan Asia       1957    30.3  9240934      821.
+##  2 Afghanistan Asia       1967    34.0 11537966      836.
+##  3 Afghanistan Asia       1977    38.4 14880372      786.
+##  4 Afghanistan Asia       1987    40.8 13867957      852.
+##  5 Afghanistan Asia       1997    41.8 22227415      635.
+##  6 Afghanistan Asia       2007    43.8 31889923      975.
+##  7 Rwanda      Africa     1952    40    2534927      493.
+##  8 Rwanda      Africa     1962    43    3051242      597.
+##  9 Rwanda      Africa     1972    44.6  3992121      591.
+## 10 Rwanda      Africa     1982    46.2  5507565      882.
+## 11 Rwanda      Africa     1992    23.6  7290203      737.
+## 12 Rwanda      Africa     2002    43.4  7852401      786.
+```
+
+Did the analyst succeed at getting the data for Rwanda and Afghanistan?
+
+It doesn't seem to be producing the correct output. 
+
+Why? 
+
+Well, if we filter each the Rwanda and Afghanistan rows separately, we can see what is going wrong.
+
+
+```r
+gapminder %>% 
+  filter(country == "Afghanistan") # filter for Afghanistan rows only
+```
+
+```
+## # A tibble: 12 x 6
+##    country     continent  year lifeExp      pop gdpPercap
+##    <fct>       <fct>     <int>   <dbl>    <int>     <dbl>
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## 11 Afghanistan Asia       2002    42.1 25268405      727.
+## 12 Afghanistan Asia       2007    43.8 31889923      975.
+```
+
+The output here is 12 rows for Afghanistan data **NOT 6**, which was the case for the original code block.
+
+
+```r
+gapminder %>% 
+  filter(country == "Rwanda") # filter for Rwanda rows only
+```
+
+```
+## # A tibble: 12 x 6
+##    country continent  year lifeExp     pop gdpPercap
+##    <fct>   <fct>     <int>   <dbl>   <int>     <dbl>
+##  1 Rwanda  Africa     1952    40   2534927      493.
+##  2 Rwanda  Africa     1957    41.5 2822082      540.
+##  3 Rwanda  Africa     1962    43   3051242      597.
+##  4 Rwanda  Africa     1967    44.1 3451079      511.
+##  5 Rwanda  Africa     1972    44.6 3992121      591.
+##  6 Rwanda  Africa     1977    45   4657072      670.
+##  7 Rwanda  Africa     1982    46.2 5507565      882.
+##  8 Rwanda  Africa     1987    44.0 6349365      848.
+##  9 Rwanda  Africa     1992    23.6 7290203      737.
+## 10 Rwanda  Africa     1997    36.1 7212583      590.
+## 11 Rwanda  Africa     2002    43.4 7852401      786.
+## 12 Rwanda  Africa     2007    46.2 8860588      863.
+```
+The output here is 12 rows for Rwanda  data **NOT 6**, which was the case for the original code block.
+
+So, the problem is that there are 12 rows for each of Afghanistan and Rwanda, but only 6 of each are being printed from the analyst's original code. I suspect there is something amiss with the country == c("Rwanda", "Afghanistan") portion of the original code. I think that country == c("Rwanda", "Afghanistan") only works with one country. For example, country == c("Rwanda") prints ok, as we can see below. 
+
+
+```r
+gapminder %>% 
+  filter(country == c("Rwanda")) # filter for Rwanda rows only
+```
+
+```
+## # A tibble: 12 x 6
+##    country continent  year lifeExp     pop gdpPercap
+##    <fct>   <fct>     <int>   <dbl>   <int>     <dbl>
+##  1 Rwanda  Africa     1952    40   2534927      493.
+##  2 Rwanda  Africa     1957    41.5 2822082      540.
+##  3 Rwanda  Africa     1962    43   3051242      597.
+##  4 Rwanda  Africa     1967    44.1 3451079      511.
+##  5 Rwanda  Africa     1972    44.6 3992121      591.
+##  6 Rwanda  Africa     1977    45   4657072      670.
+##  7 Rwanda  Africa     1982    46.2 5507565      882.
+##  8 Rwanda  Africa     1987    44.0 6349365      848.
+##  9 Rwanda  Africa     1992    23.6 7290203      737.
+## 10 Rwanda  Africa     1997    36.1 7212583      590.
+## 11 Rwanda  Africa     2002    43.4 7852401      786.
+## 12 Rwanda  Africa     2007    46.2 8860588      863.
+```
+
+On the other hand, we need to specifify that we want to filter for multiple countries by using the the code %in% before the c("Rwanda", "Afghanistan"). 
+
+Now, that we've broken down the original code block and found the problem, we can try to fix it using our proposed solution.
+
+
+```r
+filter(gapminder, country %in% c("Rwanda", "Afghanistan"))
+```
+
+```
+## # A tibble: 24 x 6
+##    country     continent  year lifeExp      pop gdpPercap
+##    <fct>       <fct>     <int>   <dbl>    <int>     <dbl>
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## # ... with 14 more rows
+```
+
+Now, the correct output is produced. We have a total of 24 rows, 12 of which are for Afghanistan and 12 are for Rwanda. Case closed. 
