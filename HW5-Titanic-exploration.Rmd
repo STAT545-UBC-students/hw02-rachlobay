@@ -17,22 +17,20 @@ First, I will try to test the data by examining its class, dimensions and its va
 
 ## Smell test the data
 
-Install tidyverse and packages
+Assuming tidyverse is already installed, simply load tidyverse using the R code in the code block below.
+
+If you do not have tidyverse installed as we did in class, simply type install.packages("tidyverse") **before** typing library(tidyverse).
 
 ```{r}
-install.packages("tidyverse")
-install.packages("titanic")
+library(tidyverse) # load tidyverse
 ```
-
-Load tidyverse and titanic data.
 
 ```{r}
-library(tidyverse)
-library(titanic)
+titanic <- read.csv("titanic.csv")
 ```
 
 
-To see that our data set got loaded properly into R (ie. so that the structure is what we expect), I will peak at the head of the data set.
+To see that our data set got imported properly into R Studio (ie. so that the structure is what we expect), I will peak at the head of the data set.
 ```{r}
 head(titanic) # To see the top rows of the Titanic data set
 ```
@@ -68,7 +66,7 @@ I think that ncol() and nrow() functions may be more broadly applied than the di
 On the other hand, the dim function, as it states in its documentation, returns **all** dimensions. So, the dim() function would be useful if we have a matrix, data frame or array, because those are instances where knowing the dimensions would be useful and may be applied to other mathematical operations (for example, matrix multiplication).
 
 ```{r}
-structure(titanic) # Output: 1,310 x 14 data frame
+head(structure(titanic)) # Output: 1,310 x 14 data frame... we could check this by using structure(titanic), but we will just look at the head of it because otherwise there is a lot to look at.
 ```
 
 Finally, the structure() function gives the output of 1,310 x 14. This means that data set has 1,310 rows by 14 columns. The format of the structure() output is similar to the dim() output. 
@@ -247,8 +245,9 @@ We can see that the tails of the black QQ plot curve and that the black line is 
 
 In our exploration of the categorical and quantitative variables, we have looked at a few plots including bar plots, histograms, and a QQ plot above. We shall expand on that in this section by introducing some more plots through other tools such as the ggplot2 package.
 
+Note, I have assumed that you have already installed ggplot2 on your computer. If not, type install.packages("ggplot2") **before** library(ggplot2).
+
 ```{r}
-install.packages("ggplot2") # install ggplot2 package
 library(ggplot2) # load ggplot2 package
 ```
 
@@ -381,19 +380,28 @@ The most frequent fare for those who survived in third class is lower than in fi
 
 Whew. Lots of analysis there.
 
+Now, I will use filter(), select(), and %>% in a different way.
+
+First, make sure the plyr package is installed. Then, type the following command to load the plyr package. We want to do this so that the count of the factor home.dest will work in the next R code block.
+
+```{r}
+library(plyr) # lods plyr package
+```
+
 Next, I want to find out what were the popular home/destinations for the adult passengers who died. I further want to see the difference in destinations for males and females. I will use a dotplot to investigate this. Note that I am using a count of the home.dest of **greater than 4**.
 
 ```{r}
-
 titanic %>% 
-  filter(survived == "0" & ((age > 18) | (age < 60)) & (count(home.dest)$freq > 4)) %>%  #filter by the passengers who died, who were adults (over the age of 18 and under the age of 60), and whose home and destination had a count of at least 4.
-  select(sex, home.dest) %>% # select only the columns of sex and home.dest in that order
+  filter(survived == "0" & ((age > 18) | (age < 60)) & (count(home.dest)$freq > 4)) %>% #filter by the passengers who died, who were adults (over the age of 18 and under the age of 60), and whose home and destination had a count of at least 4.
+ select(sex, home.dest) %>% # select only the columns of sex and home.dest in that order
       ggplot(aes(home.dest, colour = sex)) + 
       geom_dotplot() + 
       labs(title = "Popular home/destinations for the adult passengers who died on Titanic", x =
            "Home / Destination", y = "Frequency") +
       theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
     
 ```
+
 
 We can see from this dotplot that, aside from the passengers who did not list a home/destination (of which there were many), the greatest frequency of passengers who died were females who were heading from Sweden to Winnipeg, Manitoba. 
