@@ -1,0 +1,399 @@
+---
+title: "HW5-Titanic-exploration"
+output:
+    html_document:
+        theme: cerulean
+        toc: true
+        keep_md: true
+---
+
+# Homework 5: Gapminder Exploration
+
+## Introduction 
+
+My goal is to explore the Titanic data set, which may be obtained from the titanic package. This data set has info. from 1309 passengers that were on the Titanic.
+
+First, I will try to test the data by examining its class, dimensions and its variables. Then, I will look at various plots. I will use dplyr and ggplot2 for data description and visualization. Finally, I will demonstrate that I have mastered filter(), select() and %>%.
+
+## Smell test the data
+
+Install tidyverse and packages
+
+```{r}
+install.packages("tidyverse")
+install.packages("titanic")
+```
+
+Load tidyverse and titanic data.
+
+```{r}
+library(tidyverse)
+library(titanic)
+```
+
+
+To see that our data set got loaded properly into R (ie. so that the structure is what we expect), I will peak at the head of the data set.
+```{r}
+head(titanic) # To see the top rows of the Titanic data set
+```
+
+I will also look at the tail to make sure nothing is amiss with the last few rows of the data set. 
+```{r}
+tail(titanic) # To see the bottom rows of the Titanic data set
+```
+
+Note that the 1310 row has N/A across its entries. I could omit it, but I will leave it in because that row was initially included in all .csv versions of the Titanic data set that I have found.
+
+```{r}
+inherits(titanic, "list")     # Is Titanic data in a list? Output is FALSE. So, Titanic data is not a list. 
+inherits(titanic, "vector") # Is Titanic data in a data frame? Output is FALSE. So, it is not a vector.
+inherits(titanic, "matrix") # Is Titanic data in a data frame? Output is TRUE. So, it is not a matrix.
+inherits(titanic, "data.frame") # Is Titanic data in a data frame? Output is TRUE. So, it is a data frame.
+
+class(titanic) # class of Titanic is data.frame, which makes sense given our above conclusion that gapminder data is in a data frame.
+```
+
+```{r}
+ncol(titanic) # number of variables/columns is 14
+nrow(titanic) # number of rows/observations is 1310
+
+```
+
+```{r}
+dim(titanic) # gives the dimensions of Titanic data frame which is 1310 x 14 (rows x columns).
+```
+
+I think that ncol() and nrow() functions may be more broadly applied than the dim() function  because they simply return the number of columns, for ncol(), and number of rows, for nrow(). Thus, the ncol() and nrow() functions could be applied to vectors, data frames, arrays, etc.
+
+On the other hand, the dim function, as it states in its documentation, returns **all** dimensions. So, the dim() function would be useful if we have a matrix, data frame or array, because those are instances where knowing the dimensions would be useful and may be applied to other mathematical operations (for example, matrix multiplication).
+
+```{r}
+structure(titanic) # Output: 1,310 x 14 data frame
+```
+
+Finally, the structure() function gives the output of 1,310 x 14. This means that data set has 1,310 rows by 14 columns. The format of the structure() output is similar to the dim() output. 
+
+As was said in the Internal Discussion forum for Stat545, the typeof function gives the data structures that are specific to R. On the other hand, classes are a little more confusing. In section 2.2.4, the [R Language Definition manual](https://cran.r-project.org/doc/manuals/R-lang.html#Classes) states:
+
+> R has an elaborate class system1, principally controlled via the class attribute. This attribute is a character vector containing the list of classes that an object inherits from. This forms the basis of the “generic methods” functionality in R.
+
+...
+
+> This attribute can be accessed and manipulated virtually without restriction by users. There is no checking that an object actually contains the components that class methods expect. 
+
+Notice the differences in output for typeof and class (ie. what data type each variable is given is different for typeof and class)
+
+```{r}
+sapply(titanic, typeof) # Output: pclass, survived, name, sex, sibsp, parch, ticket, cabin, embarked, boat, body and home.dest are integers, while age and fare are each a double.
+```
+
+
+```{r}
+sapply(titanic, class) # Output: pclass, survived, age, sibsp, and parch are integers, while name, sex, ticket, cabin, embarked, boat, and home.dest are factors, while age and fare are numeric.
+```
+
+## Explore individual variables
+
+First, I will have a quick peak at the head of the gapminder data set to select the variables I will explore
+
+```{r}
+head(titanic) # shows the top few rows of the Titanic data set
+```
+
+### Categorical variable exploration - sex
+The categorical variable I chose to explore is sex. I can access the data for this variable by typing titanic$sex. 
+
+We want to find whether there are more male or female passengers. We can use the table function for this categorical variable to see the counts of the males and females
+
+```{r}
+sex.counts = table(titanic$sex)
+sex.counts # Output: 466 female, 843 male
+```
+
+Next, we could have a look at the frequencies by doing a bit of simple math to make the counts into proportions.
+
+```{r}
+prop.sex.counts <- sex.counts / sum(sex.counts)
+prop.sex.counts
+```
+
+We can see that the female proportion is 0.3557251908 (or 35.57 %), whereas male has a proportion of 0.6435114504 (or 6.435 %). There is another category, which is for the 1310th row of the data frame which has N/A across the row. The  proportion of N/A is 0.0007633588 (Or 0.07633588 %). The counts correspond to the proportions, so it makes sense that since there were more males in count (843 males) the proportion of males would be higher than females. 
+
+Distribution does not really apply to categorical data. So, I will not go into that.
+
+We can see the proportion of males versus females versus N/A in the following pie chart.
+
+```{r}
+# Basic pie chart
+labels <- c("N/A", "male", "female")
+pie(prop.sex.counts, labels = labels, main="Pie Chart of the Proportions of the Sexes")
+```
+
+Bar plots are another way to visualize categorical variables.
+
+We will use a bar plot to see the counts of people on the Titanic for our data set. Note that the far left column is for unidentified (N/A) sex. 
+
+```{r}
+barplot(sex.counts, xlab = "sex (N/A, female, or male)", ylab = "count", main = "Counts for the sexes for the Titanic data")
+```
+
+
+```{r}
+```
+
+We can rearrange the bar plot from largest to smallest. We must first reorder the sex counts in decreasing order and then create the new bar plot.
+```{r}
+ordered.sex.counts <- sex.counts[order(sex.counts,decreasing = TRUE)] # reorder the sex counts in decreasing order
+ordered.sex.counts
+ barplot(ordered.sex.counts, xlab = "sex (N/A, female, or male)", ylab = "count", main = "Counts for the sexes for the Titanic data in decreasing order")
+```
+
+Now, I will create a table of the number of males and females and whether they survived or not. I will then use the addmargins() function to get the totals of the rows and columns. Note that 0 corresponds to died, while 1 corresponds to survived, according to the data set.
+
+```{r}
+mf.survival <- table(titanic$survive,titanic$sex) # First, we should create a table of the male and female survival.
+mf.survival
+addmargins(mf.survival) # We can add margins to get the totals of the rows and columns.
+```
+
+Here is a stacked bar plot of the male and female survival. Note that dark red was chosen for the survived, whereas blue was chosen for died. 
+
+We can see in the stacked bar plot that the majority of females survived, while the majority of males perished.
+
+```{r}
+barplot(mf.survival, xlab = "sex", ylab = "count", main = "Stacked bar plot of N/A, female, and male survival", col = c("blue","darkred"))
+```
+
+Here is a grouped bar plot to see survival as two different bars for each the males and females.
+
+Similar to the stacked bar plot, we can clearly see from the grouped bar plot that the majority of females survived, while the majority of males perished.
+
+```{r}
+barplot(mf.survival, xlab = "sex", ylab = "count", main = "Grouped bar plot of N/A, female, and male survival", col = c("blue","darkred"), beside = TRUE)
+```
+
+### Quantitative variable exploration - age
+
+```{r}
+summary(titanic$age) # The summary command gives us the min., 1st quartile, median, 3rd quartile, and max. age.
+```
+
+The summary function tells us that the mean is 29.8811 years, which is the average age of the passengers in this data set. The median, or middle value, from the data is 28.0000 years. 
+
+It is clear from the summary function that the min. age is 0.1667 years old, while the max. age is 80.0000 years old. Hence, the range of years is 80.0000 - 0.1667 = 79.8333 years . From the range of the ages, we can ascertain that the possible values are age between 0.1667 and 80.0000 years old. Note that this does not mean that we are looking at all the ages between 0.1667 and 80.0000 years old, just the ages that appear in this data frame. 
+
+Measures of spread include the rang (which was calculated above), quartiles, interquartile range, and standard deviation. For the years variable, the 1st quartile (Q1) is at 21.0000 years old, whereas the thrid quartile (Q3) is at 39.0000 years old. Hence the interquartile range (IQR) is IQR = Q3 - Q1 = 39.0000 - 21.0000 = 18.0000 years old. The standard deviation (sd) can be calculated using the simple sd() function.
+
+Note that I will first exclude the NA cases when I calculate the standard deviation, as the sd() function does not do that automatically. If I don't do this, the sd(titanic$age) = NA. I will also confirm that the mean for the ages that is calculated when NA is omitted is the same as the mean from the summary function above.
+
+```{r}
+na.omit.age <- na.omit(titanic$age) # omit cases with NA as age
+head(na.omit.age) # check head to make sure that age values are being displayed as expected.
+mean(na.omit.age) # check that mean is the same as summary function above.
+sd(na.omit.age) # standard deviation of ages
+```
+The mean is still 29.88113 years (as we got in the summary function above). Also, the standard deivation is found to be 14.4135 years. 
+ 
+Now, I will calculate the typical age value by finding the mode of the ages. Unlike with the mean and standard deviation functions, there is no simple formula for the mode in R. Hence, I will use the function for the mode from (here)[https://www.tutorialspoint.com/r/r_mean_median_mode.htm]. Again, there I will not include the NA values in my analysis, so I will use the na.omit.age values to calculate the mode.
+
+```{r}
+# create functoin for the mode
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+# find the mode of the ages for the Titanic passengers
+getmode(na.omit.age)
+
+```
+From the output, the mode (ie. the most frequently occuring value) is 24 years old.
+
+Now, I will look at the distribution of the ages by examining a histogram of the ages.
+
+```{r}
+# create histogram of ages
+hist.ages <- hist(na.omit.age, xlab="Age",ylab="Frequency", main="Frequency of the ages for the Titanic passengers")
+hist.ages
+```
+
+From the histogram, we can see that calculation for the mode is reasonable. We can clearly see that the highest bar is around age 20-25 years old (ie. the greatest number of passengers is in that bar). 
+
+Additionally, from the age histogram, we can see that the distribution is unimodal (one mode), the skew is positive (because there is a longer right tail).
+
+We can overlay the normal curve over the histogram to see if the distribution of ages is approximately normal. Note that I used the histogram of ages from the above R code. I tried to explain each step in the code block below. See (here)[https://www.statmethods.net/graphs/density.html] for the original code to overlay a normal curve over a histogram.
+
+```{r}
+xfit <- seq(min(na.omit.age), max(na.omit.age)) # the sequence of ages in na.omit.age 
+yfit <- dnorm(xfit, mean = mean(na.omit.age), sd = sd(na.omit.age)) # fit the density of the normal distirbution to the age values in our data set with mean and standard deviaton of the ages in our data set
+yfit <- yfit * diff(hist.ages$mids[1:2]) * length(na.omit.age) # our yfit is built from the density of the normal distibution multiplied by the size of the bins, which is diff(hist.ages$mids[1:2]), and multiplied by the number of ages from our data.
+
+plot(hist.ages) # Plot histogram of ages from above R code.
+lines(xfit, yfit, col = "black", lwd = 2) # normal curve in a black colour with line width (lwd) of 2.
+
+```
+
+We can see from the histogram that the distribution is approximately normal. 
+
+We can also see if the distribution is approximately normal by using the quantile-quantile, qqnorm() function. The qqnorm() function gives us a line that indicates the correlation between the normal distribution and our sample distribution. Basically, if the black line is roughly straight at a 45-degree angle, then we can say that our data is approximately normally distributed. I will draw a straight blue line at a 45-degrees using qqline() for our comparison.
+
+```{r}
+qqnorm(na.omit.age)
+qqline(na.omit.age, col = "blue", lwd = 2)
+```
+
+We can see that the tails of the black QQ plot curve and that the black line is not exactly straight. Yet, for our rough estimation, the line is pretty close to being straight. Hence, we can say that our age data is normally distributed.
+
+## Explore various plot types
+
+In our exploration of the categorical and quantitative variables, we have looked at a few plots including bar plots, histograms, and a QQ plot above. We shall expand on that in this section by introducing some more plots through other tools such as the ggplot2 package.
+
+```{r}
+install.packages("ggplot2") # install ggplot2 package
+library(ggplot2) # load ggplot2 package
+```
+
+Here is a scatterplot of passenger age versus fare, which are both quantitative variables. Note that the rows containing missing or NA data values are automatically removed.
+
+```{r}
+ggplot(titanic, aes(x = age, y = fare)) + geom_point() +
+  labs(title="Scatterplot of Titanic passenger age versus fare")
+```
+
+We can see there are three outliers with fares above 500 dollars. The majority of fares are concentrated under 100 dollars, which makes sense because there were more third-class passengers than first-class passengers, who paid more money for their ticket fare. Finally, there are more younger passengers than older passengers on the scatterplot. This means that we don't see many passengers over the age of 70 on the scatterplot.
+
+Now, I will examine a plot of one quantitative variable. I shall look at a dotplot of the fares
+
+```{r}
+ggplot(titanic, aes(fare)) + geom_density() + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares")
+
+```
+We can see from the densityplot that the highest frequency of passengers paid under $50 dollars for their tickets. 
+
+I will now colour a density plot of passenger fares by class. Note that I will first have to convert pclass to a factor because it is originally an integer (as indicated by typeof and class in the Smell test the data section). In order for ggplot to fill by class, the variable cannot be an integer.
+
+```{r}
+class <- as.factor(titanic$pclass) # I first had to convert pclass to factor to get ggplot to fill by class
+
+ggplot.fare.class <- ggplot(titanic, aes(fare, group=class, fill=class)) # create variable ggplot.fare.class so we can use this base code for multiple plots
+
+ggplot.fare.class + geom_density() + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares by class") # densityplot of Titanic passenger fares by class
+
+```
+
+From this densityplot of fares by class, we can see that the majority of people who paid under fifty dollars for a ticket were from first class. This observation makes sense because we would expect that third class passengers paid less than first class passengers. Also, we can see that only the first class passengers had higher fares over 100 dollars.
+
+Next, we shall look at a histogram of the fares (quantitative variable), which are coloured by the class of the passengers (categorical variable because there are three classes). Note that the values that were listed as NA or that were just blank were automatically removed. There should be a caution sign to indicate this in R Studio.
+
+```{r}
+
+ggplot.fare.class +
+  geom_histogram(bins = 30) + 
+  labs(title = "Bar plots of Titanic passenger fares by class")
+```
+
+We can see that as the fare increases, the number of first class passenger increases. This makes sense because first class passengers were required to pay a higher fare than third class passengers. The luxuries of first class ain't cheap.
+
+We can display the plot of Titanic passengers age by class using a jitterplot overlayed on top of a violin plot. As was the case for previous graphs, the missing or non-finite values were removed automatically.
+
+```{r}
+ggplot(titanic, aes(class,age)) + geom_violin() + 
+  geom_jitter(alpha = 0.2) + 
+  labs(title = "Jitterplots overlayed over violin plots of Titanic passenger age by class")
+```
+
+From the jitterplots overlayed over top of the violin plots, we can see that a higher concentration of passengers were in third class. Furthermore, the age of passengers in all the classes were concentrated between 20 - 40 years of age. First class appears to have the greatest range in age (ie. the ages are more dispersed than for the second and third classes). First class doesn't have the major concentration of people in the 20 to 40 year age range that second and third class do. 
+
+## Use filter(), select(), and %>% 
+
+First I will filter data to first class and plot the survival of first class passengers coloured by sex.
+
+```{r}
+titanic %>% 
+  filter(pclass == "1") %>% 
+  ggplot(aes(survived, fill=sex)) + 
+  geom_bar() + 
+  labs(title = "Segmented barplot of survival of first class passengers coloured by sex", x = "Survival (0 = died, 1 = survived)", y = "Count")
+  
+```
+
+We can see from the segmented bar plot that the majority of first class females survived, whereas the majority of males died. That said, more males survived than for third class as we will see below...
+
+```{r}
+titanic %>% 
+  filter(pclass == "3") %>% 
+  ggplot(aes(survived, fill=sex)) + 
+  geom_bar() + 
+  labs(title = "Segmented barplot of survival of third class passengers coloured by sex", x = "Survival (0 = died, 1 = survived)", y = "Count")
+  
+```
+
+Quite a difference from the first class results, especially for the females! We can see that roughly half the females in third class died. For the males in first class, almost half of the males survived, whereas for third class the vast majority died.
+
+Now, I will incorporate use of the select() function and use it to help make a few informative plots.
+
+First, I will select only the age, sex, fare, pclass, and survive columns, in that order. Next, I will filter by the first class passengers that survived. Finally, from those first class passengers that survived, I will plot age versus fare and colour the scatterplot by sex.
+
+That seems kind of confusing. Hopefully, stating my objective will help to clear that up. My objective is to find if there is a relationship between age and fare by sex from the first class passengers that survived.
+
+```{r}
+titanic %>% 
+  select(age, sex, pclass, fare, survived) %>%  # select only age, pclass, fare and survive columns, in that order.
+  filter(pclass == "1" & survived == "1") %>% # filter by survived and first class rows.
+  ggplot(aes(age, fare, colour = sex)) + 
+  geom_point() +
+  labs(title = "Scatterplot of survival of first class passengers coloured by sex", x = "Age", y = "Fare")
+
+```
+ 
+What do we see in the above scatterplot? 
+
+We can see that the females, who were middle-aged (age ranging from approximately 20 - 60 years) and who paid a higher fare, survived. It looks like most of the males in first class who survived paid, on average, a lower fare than the females in first class who survived. What I mean is that there is a greater dispersion of fares for first class females than males who survived. Hence, the average fare for females is higher than for males. 
+
+Also, there looks to be more females in first class that survived than males (which confirms our above segmented bar graph observations). 
+
+For both males and females, the most frequent fare for first class passengers who survived is just under 100 dollars and the age is concentrated between 20 and 60 years of age.
+
+In the above code for the scatterplot, we will only change that we filter by third class instead of the first (ie. the rest of the code is the same). What do we find?
+
+```{r}
+titanic %>% 
+  select(age, sex, pclass, fare, survived) %>%  # select only age, pclass, fare and survive columns, in that order.
+  filter(pclass == "3" & survived == "1") %>% # filter by survived and third class rows.
+  ggplot(aes(age, fare, colour = sex)) + 
+  geom_point() +
+  labs(title = "Scatterplot of survival of third class passengers coloured by sex", x = "Age", y = "Fare")
+
+```
+
+First, I will discuss some observations on the scatterplot of survival of third class passengers coloured by sex. It looks as though there are slightly more females than males who survived (which confirms our above segmented bar graph observations). However, both the males and females who survived are similarly dispersed. The major concentration of both males and females are within 0 - 40 years of age and paid 7 - 20 dollars for their fare. 
+
+There are two male outliers in third class who paid a higher fare (near 60 dollars) who survived. Also, there is a female outlier after 60 years of age who paid about the average fare.
+
+Now, I will discuss the differences between the first and third class scatterplots of passengers who survived. 
+
+Overall, there appears to be a lower number of third class passengers that survived than first class because there are less points on the scatterplot for third class.
+
+There are slightly more females than males who survived in third class than in first class. However, there are clearly many more females than males who surivived in first class.
+
+Most of those in third class who survived had were between 0 and 40 years of age. On the other hand, most of those in first class who survived had were between 20 and 60 years of age. This means that, on average, most of the people who survived in first class were older than those in third class. 
+
+The most frequent fare for those who survived in third class is lower than in first class. The most frequent fare for passengers who survived in third class is under 40 dollars, whereas for first class the average fare was under 100 dollars. This makes sense because third class passengers paid less for their tickets than first class passengers. 
+
+Whew. Lots of analysis there.
+
+Next, I want to find out what were the popular home/destinations for the adult passengers who died. I further want to see the difference in destinations for males and females. I will use a dotplot to investigate this. Note that I am using a count of the home.dest of **greater than 4**.
+
+```{r}
+
+titanic %>% 
+  filter(survived == "0" & ((age > 18) | (age < 60)) & (count(home.dest)$freq > 4)) %>%  #filter by the passengers who died, who were adults (over the age of 18 and under the age of 60), and whose home and destination had a count of at least 4.
+  select(sex, home.dest) %>% # select only the columns of sex and home.dest in that order
+      ggplot(aes(home.dest, colour = sex)) + 
+      geom_dotplot() + 
+      labs(title = "Popular home/destinations for the adult passengers who died on Titanic", x =
+           "Home / Destination", y = "Frequency") +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+    
+```
+
+We can see from this dotplot that, aside from the passengers who did not list a home/destination (of which there were many), the greatest frequency of passengers who died were females who were heading from Sweden to Winnipeg, Manitoba. 
