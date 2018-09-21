@@ -16,7 +16,7 @@ First, I will try to test the data by examining its class, dimensions and its va
 
 ## Smell test the data
 
-If you do not have the tidyverse or kableExtra packages installed, simply type install.packages("tidyverse") or install.packages("kableExtra") **before** typing library(tidyverse).
+If you do not have the plyr, tidyverse, knitr, or kableExtra packages installed, simply type install.packages("PACKAGE_NAME_HERE") **before** typing library(PACKAGE_NAME_HERE).
 
 Now, assuming tidyverse and kableExtra have been installed, simply load them using the R code in the code block below.
 
@@ -45,7 +45,7 @@ library(tidyverse) # load tidyverse
 ```r
 library(knitr) # for building tables later on
 library(kableExtra) # load kableExtra package, which I will use for building tables later on
-library(plyr)
+library(plyr) # load plyr
 ```
 
 ```
@@ -79,6 +79,8 @@ library(plyr)
 ## 
 ##     compact
 ```
+
+Note that plyr is necessary to load after for this project because otherwise when I start to change levels of  categorical variables (titanic$sex levels) later on, we will get an error.
 
 Next, I will read the titanic.csv in. Note that I put the titanic.csv in this github repo [here](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic.csv).
 
