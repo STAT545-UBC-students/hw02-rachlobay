@@ -2,7 +2,6 @@
 title: "HW5-Titanic-exploration"
 output:
     html_document:
-        theme: cerulean
         toc: true
         keep_md: true
 ---
