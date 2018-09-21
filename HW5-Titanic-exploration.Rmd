@@ -406,7 +406,7 @@ titanic %>%
 
 We can see from this dotplot that, aside from the passengers who did not list a home/destination (of which there were many), the greatest frequency of passengers who died were females who were heading from Sweden to Winnipeg, Manitoba. 
 
-## But I want to do more
+## Evaluation of the gapminder Rwanda and Afghanistan code block
 
 First, I will load the library gapminder package. Note that you must install gapminder first before you use the library() function to load it.
 
