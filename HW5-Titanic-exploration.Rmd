@@ -11,7 +11,7 @@ output:
 
 ## Introduction 
 
-My goal is to explore the Titanic data set, which I download as an .xls document from (here)[https://www.google.ca/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=2ahUKEwiZ2JuGo8vdAhVJzVQKHdh8A2UQFjABegQICRAC&url=http%3A%2F%2Fbiostat.mc.vanderbilt.edu%2Fwiki%2Fpub%2FMain%2FDataSets%2Ftitanic3.xls&usg=AOvVaw1j63KEb1daRf8kqotv9b7B]. I converted the .xls file to a .csv file in Excel. Now, this data set has info. from 1309 passengers who were onboard the Titanic.
+My goal is to explore the Titanic data set, which I download as an .xls document from [here](https://www.google.ca/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=2ahUKEwiZ2JuGo8vdAhVJzVQKHdh8A2UQFjABegQICRAC&url=http%3A%2F%2Fbiostat.mc.vanderbilt.edu%2Fwiki%2Fpub%2FMain%2FDataSets%2Ftitanic3.xls&usg=AOvVaw1j63KEb1daRf8kqotv9b7B). I converted the .xls file to a .csv file in Excel. Now, this data set has info. from 1309 passengers who were onboard the Titanic.
 
 First, I will try to test the data by examining its class, dimensions and its variables. Then, I will look at various plots. I will use dplyr and ggplot2 for data description and visualization. Finally, I will demonstrate that I have mastered filter(), select() and %>%.
 
@@ -23,10 +23,12 @@ Now, assuming tidyverse and kableExtra have been installed, simply load them usi
 
 ```{r}
 library(tidyverse) # load tidyverse
+library(knitr) # for building tables later on
 library(kableExtra) # load kableExtra package, which I will use for building tables later on
+library(plyr)
 ```
 
-Next, I will read the titanic.csv in. Note that I put the titanic.csv in this github repo (here)[https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic.csv].
+Next, I will read the titanic.csv in. Note that I put the titanic.csv in this github repo [here](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic.csv).
 
 ```{r}
 titanic <- read.csv("titanic.csv") # read titanic.csv in
@@ -82,7 +84,7 @@ As was said in the Internal Discussion forum for Stat545, the typeof function gi
 
 > This attribute can be accessed and manipulated virtually without restriction by users. There is no checking that an object actually contains the components that class methods expect. 
 
-Notice the differences in output for typeof and class (ie. what data type each variable is given is different for typeof and class)
+Notice the differences in output for typeof and class (ie. what data type each variable is given is different for typeof and class).
 
 ```{r}
 sapply(titanic, typeof) # Output: pclass, survived, name, sex, sibsp, parch, ticket, cabin, embarked, boat, body and home.dest are integers, while age and fare are each a double.
@@ -95,7 +97,7 @@ sapply(titanic, class) # Output: pclass, survived, age, sibsp, and parch are int
 
 ## Explore individual variables
 
-First, I will have a quick peak at the head of the gapminder data set to select the variables I will explore
+First, I will have a quick peak at the head of the gapminder data set to select the variables I will explore.
 
 ```{r}
 head(titanic) # shows the top few rows of the Titanic data set
@@ -104,21 +106,51 @@ head(titanic) # shows the top few rows of the Titanic data set
 ### Categorical variable exploration - sex
 The categorical variable I chose to explore is sex. I can access the data for this variable by typing titanic$sex. 
 
-We want to find whether there are more male or female passengers. We can use the table function for this categorical variable to see the counts of the males and females
+We want to find whether there are more male or female passengers. We can use the table function for this categorical variable to see the counts of the males and females.
 
 ```{r}
-sex.counts = table(titanic$sex)
-sex.counts # Output: 466 female, 843 male
+sex.counts <- table(titanic$sex)
+# Add NA column name for one entry
+names(sex.counts) <- c("NA", "female", "male")
+sex.counts # Output: 1 NA, 466 female, 843 male
 ```
 
-Next, we could have a look at the frequencies by doing a bit of simple math to make the counts into proportions.
+Now, I will display this table by using the knitr::kable() tool. I am referring to [here](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) for how to create and modify tables using that package.
+
+```{r}
+levels(titanic$sex) <- c("NA", "female", "male") # changed levels so instaed of a blank space, there is NA
+
+num.titanic.sex <- count(titanic$sex)
+
+count(titanic$sex) %>% 
+  rename(c("x"="Sex")) # rename x to Sex by using plyr package
+
+# Kable table creation
+sex.counts.kable <- kable(count(titanic$sex)) %>%
+  kable_styling("striped", full_width = F, position = "left") %>%
+  add_header_above(c("Number of Titanic passengers by sex" = 2)) %>% 
+  row_spec(2, color = "silver", background = "#7C2412") %>% 
+  row_spec(3, color = "silver", background = "#0000FF")
+
+sex.counts.kable # output kable table
+```
+
+Using the mutate function from dplyr, we can mutate the frequency column to get the proportion for the counts for each sex. By a similar mutate process, we can easily get the percentage for each sex from the proportions.
+
+```{r}
+num.titanic.sex %>% 
+  mutate(proportion = (freq) / sum(freq)) %>% 
+  mutate(percent = proportion * 100)
+```
+
+Alternatively, we could have had a look at the frequencies by doing a bit of simple math to make the counts into proportions. You can see that the above mutate() function is less work.
 
 ```{r}
 prop.sex.counts <- sex.counts / sum(sex.counts)
 prop.sex.counts
 ```
 
-We can see that the female proportion is 0.3557251908 (or 35.57 %), whereas male has a proportion of 0.6435114504 (or 6.435 %). There is another category, which is for the 1310th row of the data frame which has N/A across the row. The  proportion of N/A is 0.0007633588 (Or 0.07633588 %). The counts correspond to the proportions, so it makes sense that since there were more males in count (843 males) the proportion of males would be higher than females. 
+Using either method, can see that the female proportion is 0.3557251908 (or 35.57 %), whereas male has a proportion of 0.6435114504 (or 6.435 %). There is another category, which is for the 1310th row of the data frame which has N/A across the row. The  proportion of N/A is 0.0007633588 (Or 0.07633588 %). The counts correspond to the proportions, so it makes sense that since there were more males in count (843 males) the proportion of males would be higher than females. 
 
 Distribution does not really apply to categorical data. So, I will not go into that.
 
@@ -136,10 +168,6 @@ We will use a bar plot to see the counts of people on the Titanic for our data s
 
 ```{r}
 barplot(sex.counts, xlab = "sex (N/A, female, or male)", ylab = "count", main = "Counts for the sexes for the Titanic data")
-```
-
-
-```{r}
 ```
 
 We can rearrange the bar plot from largest to smallest. We must first reorder the sex counts in decreasing order and then create the new bar plot.

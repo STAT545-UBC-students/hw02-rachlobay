@@ -11,7 +11,7 @@ output:
 
 ## Introduction 
 
-My goal is to explore the Titanic data set, which I download as an .xls document from (here)[https://www.google.ca/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=2ahUKEwiZ2JuGo8vdAhVJzVQKHdh8A2UQFjABegQICRAC&url=http%3A%2F%2Fbiostat.mc.vanderbilt.edu%2Fwiki%2Fpub%2FMain%2FDataSets%2Ftitanic3.xls&usg=AOvVaw1j63KEb1daRf8kqotv9b7B]. I converted the .xls file to a .csv file in Excel. Now, this data set has info. from 1309 passengers who were onboard the Titanic.
+My goal is to explore the Titanic data set, which I download as an .xls document from [here](https://www.google.ca/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=2ahUKEwiZ2JuGo8vdAhVJzVQKHdh8A2UQFjABegQICRAC&url=http%3A%2F%2Fbiostat.mc.vanderbilt.edu%2Fwiki%2Fpub%2FMain%2FDataSets%2Ftitanic3.xls&usg=AOvVaw1j63KEb1daRf8kqotv9b7B). I converted the .xls file to a .csv file in Excel. Now, this data set has info. from 1309 passengers who were onboard the Titanic.
 
 First, I will try to test the data by examining its class, dimensions and its variables. Then, I will look at various plots. I will use dplyr and ggplot2 for data description and visualization. Finally, I will demonstrate that I have mastered filter(), select() and %>%.
 
@@ -44,10 +44,44 @@ library(tidyverse) # load tidyverse
 ```
 
 ```r
+library(knitr) # for building tables later on
 library(kableExtra) # load kableExtra package, which I will use for building tables later on
+library(plyr)
 ```
 
-Next, I will read the titanic.csv in. Note that I put the titanic.csv in this github repo (here)[https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic.csv].
+```
+## -------------------------------------------------------------------------
+```
+
+```
+## You have loaded plyr after dplyr - this is likely to cause problems.
+## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
+## library(plyr); library(dplyr)
+```
+
+```
+## -------------------------------------------------------------------------
+```
+
+```
+## 
+## Attaching package: 'plyr'
+```
+
+```
+## The following objects are masked from 'package:dplyr':
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize
+```
+
+```
+## The following object is masked from 'package:purrr':
+## 
+##     compact
+```
+
+Next, I will read the titanic.csv in. Note that I put the titanic.csv in this github repo [here](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic.csv).
 
 
 ```r
@@ -220,7 +254,7 @@ As was said in the Internal Discussion forum for Stat545, the typeof function gi
 
 > This attribute can be accessed and manipulated virtually without restriction by users. There is no checking that an object actually contains the components that class methods expect. 
 
-Notice the differences in output for typeof and class (ie. what data type each variable is given is different for typeof and class)
+Notice the differences in output for typeof and class (ie. what data type each variable is given is different for typeof and class).
 
 
 ```r
@@ -249,7 +283,7 @@ sapply(titanic, class) # Output: pclass, survived, age, sibsp, and parch are int
 
 ## Explore individual variables
 
-First, I will have a quick peak at the head of the gapminder data set to select the variables I will explore
+First, I will have a quick peak at the head of the gapminder data set to select the variables I will explore.
 
 
 ```r
@@ -283,21 +317,92 @@ head(titanic) # shows the top few rows of the Titanic data set
 ### Categorical variable exploration - sex
 The categorical variable I chose to explore is sex. I can access the data for this variable by typing titanic$sex. 
 
-We want to find whether there are more male or female passengers. We can use the table function for this categorical variable to see the counts of the males and females
+We want to find whether there are more male or female passengers. We can use the table function for this categorical variable to see the counts of the males and females.
 
 
 ```r
-sex.counts = table(titanic$sex)
-sex.counts # Output: 466 female, 843 male
+sex.counts <- table(titanic$sex)
+# Add NA column name for one entry
+names(sex.counts) <- c("NA", "female", "male")
+sex.counts # Output: 1 NA, 466 female, 843 male
 ```
 
 ```
-## 
-##        female   male 
+##     NA female   male 
 ##      1    466    843
 ```
 
-Next, we could have a look at the frequencies by doing a bit of simple math to make the counts into proportions.
+Now, I will display this table by using the knitr::kable() tool. I am referring to [here](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) for how to create and modify tables using that package.
+
+
+```r
+levels(titanic$sex) <- c("NA", "female", "male") # changed levels so instaed of a blank space, there is NA
+
+num.titanic.sex <- count(titanic$sex)
+
+count(titanic$sex) %>% 
+  rename(c("x"="Sex")) # rename x to Sex by using plyr package
+```
+
+```
+##      Sex freq
+## 1     NA    1
+## 2 female  466
+## 3   male  843
+```
+
+```r
+# Kable table creation
+sex.counts.kable <- kable(count(titanic$sex)) %>%
+  kable_styling("striped", full_width = F, position = "left") %>%
+  add_header_above(c("Number of Titanic passengers by sex" = 2)) %>% 
+  row_spec(2, color = "silver", background = "#7C2412") %>% 
+  row_spec(3, color = "silver", background = "#0000FF")
+
+sex.counts.kable # output kable table
+```
+
+<table class="table table-striped" style="width: auto !important; ">
+ <thead>
+<tr><th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px;">Number of Titanic passengers by sex</div></th></tr>
+  <tr>
+   <th style="text-align:left;"> x </th>
+   <th style="text-align:right;"> freq </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: silver;background-color: #7C2412;"> female </td>
+   <td style="text-align:right;color: silver;background-color: #7C2412;"> 466 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: silver;background-color: #0000FF;"> male </td>
+   <td style="text-align:right;color: silver;background-color: #0000FF;"> 843 </td>
+  </tr>
+</tbody>
+</table>
+
+Using the mutate function from dplyr, we can mutate the frequency column to get the proportion for the counts for each sex. By a similar mutate process, we can easily get the percentage for each sex from the proportions.
+
+
+```r
+num.titanic.sex %>% 
+  mutate(proportion = (freq) / sum(freq)) %>% 
+  mutate(percent = proportion * 100)
+```
+
+```
+##        x freq   proportion     percent
+## 1     NA    1 0.0007633588  0.07633588
+## 2 female  466 0.3557251908 35.57251908
+## 3   male  843 0.6435114504 64.35114504
+```
+
+Alternatively, we could have had a look at the frequencies by doing a bit of simple math to make the counts into proportions. You can see that the above mutate() function is less work.
 
 
 ```r
@@ -306,12 +411,11 @@ prop.sex.counts
 ```
 
 ```
-## 
-##                    female         male 
+##           NA       female         male 
 ## 0.0007633588 0.3557251908 0.6435114504
 ```
 
-We can see that the female proportion is 0.3557251908 (or 35.57 %), whereas male has a proportion of 0.6435114504 (or 6.435 %). There is another category, which is for the 1310th row of the data frame which has N/A across the row. The  proportion of N/A is 0.0007633588 (Or 0.07633588 %). The counts correspond to the proportions, so it makes sense that since there were more males in count (843 males) the proportion of males would be higher than females. 
+Using either method, can see that the female proportion is 0.3557251908 (or 35.57 %), whereas male has a proportion of 0.6435114504 (or 6.435 %). There is another category, which is for the 1310th row of the data frame which has N/A across the row. The  proportion of N/A is 0.0007633588 (Or 0.07633588 %). The counts correspond to the proportions, so it makes sense that since there were more males in count (843 males) the proportion of males would be higher than females. 
 
 Distribution does not really apply to categorical data. So, I will not go into that.
 
@@ -324,7 +428,7 @@ labels <- c("N/A", "male", "female")
 pie(prop.sex.counts, labels = labels, main="Pie Chart of the Proportions of the Sexes")
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 Bar plots are another way to visualize categorical variables.
 
@@ -335,10 +439,7 @@ We will use a bar plot to see the counts of people on the Titanic for our data s
 barplot(sex.counts, xlab = "sex (N/A, female, or male)", ylab = "count", main = "Counts for the sexes for the Titanic data")
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
-
-
-
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 We can rearrange the bar plot from largest to smallest. We must first reorder the sex counts in decreasing order and then create the new bar plot.
 
@@ -348,8 +449,7 @@ ordered.sex.counts
 ```
 
 ```
-## 
-##   male female        
+##   male female     NA 
 ##    843    466      1
 ```
 
@@ -357,7 +457,7 @@ ordered.sex.counts
  barplot(ordered.sex.counts, xlab = "sex (N/A, female, or male)", ylab = "count", main = "Counts for the sexes for the Titanic data in decreasing order")
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
 
 Now, I will create a table of the number of males and females and whether they survived or not. I will then use the addmargins() function to get the totals of the rows and columns. Note that 0 corresponds to died, while 1 corresponds to survived, according to the data set.
 
@@ -369,7 +469,7 @@ mf.survival
 
 ```
 ##    
-##         female male
+##      NA female male
 ##   0   0    127  682
 ##   1   0    339  161
 ```
@@ -380,7 +480,7 @@ addmargins(mf.survival) # We can add margins to get the totals of the rows and c
 
 ```
 ##      
-##            female male  Sum
+##         NA female male  Sum
 ##   0      0    127  682  809
 ##   1      0    339  161  500
 ##   Sum    0    466  843 1309
@@ -395,7 +495,7 @@ We can see in the stacked bar plot that the majority of females survived, while 
 barplot(mf.survival, xlab = "sex", ylab = "count", main = "Stacked bar plot of N/A, female, and male survival", col = c("blue","darkred"))
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 
 Here is a grouped bar plot to see survival as two different bars for each the males and females.
 
@@ -406,7 +506,7 @@ Similar to the stacked bar plot, we can clearly see from the grouped bar plot th
 barplot(mf.survival, xlab = "sex", ylab = "count", main = "Grouped bar plot of N/A, female, and male survival", col = c("blue","darkred"), beside = TRUE)
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
 
 ### Quantitative variable exploration - age
 
@@ -481,7 +581,7 @@ Now, I will look at the distribution of the ages by examining a histogram of the
 hist.ages <- hist(na.omit.age, xlab="Age",ylab="Frequency", main="Frequency of the ages for the Titanic passengers")
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
 
 ```r
 hist.ages
@@ -530,7 +630,7 @@ plot(hist.ages) # Plot histogram of ages from above R code.
 lines(xfit, yfit, col = "black", lwd = 2) # normal curve in a black colour with line width (lwd) of 2.
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
 
 We can see from the histogram that the distribution is approximately normal. 
 
@@ -542,7 +642,7 @@ qqnorm(na.omit.age)
 qqline(na.omit.age, col = "blue", lwd = 2)
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
 
 We can see that the tails of the black QQ plot curve and that the black line is not exactly straight. Yet, for our rough estimation, the line is pretty close to being straight. Hence, we can say that our age data is normally distributed.
 
@@ -569,7 +669,7 @@ ggplot(titanic, aes(x = age, y = fare)) + geom_point() +
 ## Warning: Removed 265 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
 
 We can see there are three outliers with fares above 500 dollars. The majority of fares are concentrated under 100 dollars, which makes sense because there were more third-class passengers than first-class passengers, who paid more money for their ticket fare. Finally, there are more younger passengers than older passengers on the scatterplot. This means that we don't see many passengers over the age of 70 on the scatterplot.
 
@@ -584,7 +684,7 @@ ggplot(titanic, aes(fare)) + geom_density() + labs(x = "fare", y = "frequency",t
 ## Warning: Removed 2 rows containing non-finite values (stat_density).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
 We can see from the densityplot that the highest frequency of passengers paid under $50 dollars for their tickets. 
 
 I will now colour a density plot of passenger fares by class. Note that I will first have to convert pclass to a factor because it is originally an integer (as indicated by typeof and class in the Smell test the data section). In order for ggplot to fill by class, the variable cannot be an integer.
@@ -602,7 +702,7 @@ ggplot.fare.class + geom_density() + labs(x = "fare", y = "frequency",title = "D
 ## Warning: Removed 2 rows containing non-finite values (stat_density).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
 From this densityplot of fares by class, we can see that the majority of people who paid under fifty dollars for a ticket were from first class. This observation makes sense because we would expect that third class passengers paid less than first class passengers. Also, we can see that only the first class passengers had higher fares over 100 dollars.
 
@@ -619,7 +719,7 @@ ggplot.fare.class +
 ## Warning: Removed 2 rows containing non-finite values (stat_bin).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
 We can see that as the fare increases, the number of first class passenger increases. This makes sense because first class passengers were required to pay a higher fare than third class passengers. The luxuries of first class ain't cheap.
 
@@ -640,7 +740,7 @@ ggplot(titanic, aes(class,age)) + geom_violin() +
 ## Warning: Removed 264 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
 
 From the jitterplots overlayed over top of the violin plots, we can see that a higher concentration of passengers were in third class. Furthermore, the age of passengers in all the classes were concentrated between 20 - 40 years of age. First class appears to have the greatest range in age (ie. the ages are more dispersed than for the second and third classes). First class doesn't have the major concentration of people in the 20 to 40 year age range that second and third class do. 
 
@@ -657,7 +757,7 @@ titanic %>%
   labs(title = "Segmented barplot of survival of first class passengers coloured by sex", x = "Survival (0 = died, 1 = survived)", y = "Count")
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
 
 We can see from the segmented bar plot that the majority of first class females survived, whereas the majority of males died. That said, more males survived than for third class as we will see below...
 
@@ -670,7 +770,7 @@ titanic %>%
   labs(title = "Segmented barplot of survival of third class passengers coloured by sex", x = "Survival (0 = died, 1 = survived)", y = "Count")
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
 Quite a difference from the first class results, especially for the females! We can see that roughly half the females in third class died. For the males in first class, almost half of the males survived, whereas for third class the vast majority died.
 
@@ -694,7 +794,7 @@ titanic %>%
 ## Warning: Removed 19 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
  
 What do we see in the above scatterplot? 
 
@@ -720,7 +820,7 @@ titanic %>%
 ## Warning: Removed 50 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 
 First, I will discuss some observations on the scatterplot of survival of third class passengers coloured by sex. It looks as though there are slightly more females than males who survived (which confirms our above segmented bar graph observations). However, both the males and females who survived are similarly dispersed. The major concentration of both males and females are within 0 - 40 years of age and paid 7 - 20 dollars for their fare. 
 
@@ -747,38 +847,6 @@ First, make sure the plyr package is installed. Then, type the following command
 library(plyr) # lods plyr package
 ```
 
-```
-## -------------------------------------------------------------------------
-```
-
-```
-## You have loaded plyr after dplyr - this is likely to cause problems.
-## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
-## library(plyr); library(dplyr)
-```
-
-```
-## -------------------------------------------------------------------------
-```
-
-```
-## 
-## Attaching package: 'plyr'
-```
-
-```
-## The following objects are masked from 'package:dplyr':
-## 
-##     arrange, count, desc, failwith, id, mutate, rename, summarise,
-##     summarize
-```
-
-```
-## The following object is masked from 'package:purrr':
-## 
-##     compact
-```
-
 Next, I want to find out what were the popular home/destinations for the adult passengers who died. I further want to see the difference in destinations for males and females. I will use a dotplot to investigate this. Note that I am using a count of the home.dest of **greater than 4**.
 
 
@@ -802,7 +870,7 @@ titanic %>%
 ## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
 
 
 We can see from this dotplot that, aside from the passengers who did not list a home/destination (of which there were many), the greatest frequency of passengers who died were females who were heading from Sweden to Winnipeg, Manitoba. 
