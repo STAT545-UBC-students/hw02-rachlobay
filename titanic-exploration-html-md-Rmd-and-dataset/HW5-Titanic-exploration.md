@@ -350,13 +350,13 @@ sex.counts # Output: 1 NA, 466 female, 843 male
 ##      1    466    843
 ```
 
-Now, I will display this table by using the knitr::kable() tool. I am referring to [here](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) for how to create and modify tables using that package.
+Now, I will display this table by using the knitr::kable() tool. I am referring to [here](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html) for how to create and modify tables using that package. First, however, I pro
 
 
 ```r
 levels(titanic$sex) <- c("NA", "female", "male") # changed levels so instaed of a blank space, there is NA
 
-num.titanic.sex <- count(titanic$sex)
+num.titanic.sex <- count(titanic$sex) # counts for the sexes from the Titanic data
 
 count(titanic$sex) %>% 
   rename(c("x"="Sex")) # rename x to Sex by using plyr package
@@ -675,10 +675,40 @@ Note, I have assumed that you have already installed ggplot2 on your computer. I
 library(ggplot2) # load ggplot2 package
 ```
 
-Here is a scatterplot of passenger age versus fare, which are both quantitative variables. Note that the rows containing missing or NA data values are automatically removed.
+For the next couple of plots, I willI will look at age versus fare, both of which are quantitative variables. So, I will first define ggplot function with x as age and y as fare and store it as age.fare.ggplot.
 
 
 ```r
+age.fare.ggplot <- ggplot(titanic, aes(x=age, y=fare))  
+```
+
+Now, I have installed the hexbin package and will load it using the library package.
+
+
+```r
+library(hexbin) # load hexbin package
+```
+
+The geom_hex() function produces a scatterplot of hexagons. It also provides a 2D density plot showing the relationship between the two quantitative variables. Notice there is a legend to the right of the hex bin plot that shows how to interpret the gradient of colours (ie. what colour in the gradient corresponds to a higher count or density). As a side note, when we run the following code, notice that the rows containing missing or NA data values are automatically removed. So, the data that is being looked at is only the data in the data set that has **finite** values for age and fare. 
+
+
+```r
+# create hex bin plot of Titanic passenger age versus fare
+age.fare.ggplot + geom_hex() +
+  labs(title="Hex bin plot of Titanic passenger age versus fare") 
+```
+
+```
+## Warning: Removed 265 rows containing non-finite values (stat_binhex).
+```
+
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+
+Next, we shall ilustrate the same passenger age versus fare data using a scatterplot. Again, note that the rows containing missing or NA data values are automatically removed.
+
+
+```r
+# create scatterplot of Titanic passenger age versus fare
 ggplot(titanic, aes(x = age, y = fare)) + geom_point() +
   labs(title="Scatterplot of Titanic passenger age versus fare")
 ```
@@ -687,7 +717,7 @@ ggplot(titanic, aes(x = age, y = fare)) + geom_point() +
 ## Warning: Removed 265 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
 We can see there are three outliers with fares above 500 dollars. The majority of fares are concentrated under 100 dollars, which makes sense because there were more third-class passengers than first-class passengers, who paid more money for their ticket fare. Finally, there are more younger passengers than older passengers on the scatterplot. This means that we don't see many passengers over the age of 70 on the scatterplot.
 
@@ -702,7 +732,7 @@ attach(titanic) # So, I don't have to use the dollar sign every time I want to a
 scatterplot3d(age, ticket, fare, pch = 20, main = "Relationship between age, ticket and fare for Titanic passengers") # note pch just indicates the shape of the points on the scatterplot
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
 
 Now, I will add colour to the 3d scatterplot by colouring by the passenger class 
 
@@ -718,17 +748,20 @@ legend(scatter.3d$xyz.convert(0.2,0.2,0.2), pch = 20, yjust=0,
        legend = levels(class), col = rainbow(3))
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+
+Now, the rgl package lets you interact with the 3d scatterplot. We will load that in the following code block.
+Note that Mac users should have Xquartz installed onto their computer in order to view the interactive 3D scatterplot that we will make using the rgl package.
 
 
-Now, the rgl package lets you interact with the 3d scatterplot. Note that Mac users should have Xquartz installed onto their computer in order to view the interactive 3D scatterplot.
+```r
+library(rgl) # load rgl package
+```
 
 We shall again plot age, ticket, and fare. But, this time we will colour by the class. Note that I did not put a main title on this graph because, when you interact with the graph, the title overlaps over the data and it gets hard to interpret.
 
 
 ```r
-library(rgl)
-
 # Notice that I am using the factor version of pclass, class in the below plot3d code
 plot3d(age, ticket, fare, col = rainbow(3)[class]) 
 
@@ -753,7 +786,7 @@ ggplot(titanic, aes(fare)) + geom_density() + labs(x = "fare", y = "frequency",t
 ## Warning: Removed 2 rows containing non-finite values (stat_density).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 We can see from the densityplot that the highest frequency of passengers paid under $50 dollars for their tickets. 
 
 I will now colour a density plot of passenger fares by class. Note that I will first have to convert pclass to a factor because it is originally an integer (as indicated by typeof and class in the Smell test the data section). In order for ggplot to fill by class, the variable cannot be an integer.
@@ -771,7 +804,7 @@ ggplot.fare.class + geom_density() + labs(x = "fare", y = "frequency",title = "D
 ## Warning: Removed 2 rows containing non-finite values (stat_density).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
 
 From this densityplot of fares by class, we can see that the majority of people who paid under fifty dollars for a ticket were from first class. This observation makes sense because we would expect that third class passengers paid less than first class passengers. Also, we can see that only the first class passengers had higher fares over 100 dollars.
 
@@ -788,7 +821,7 @@ ggplot.fare.class +
 ## Warning: Removed 2 rows containing non-finite values (stat_bin).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
 
 We can see that as the fare increases, the number of first class passenger increases. This makes sense because first class passengers were required to pay a higher fare than third class passengers. The luxuries of first class ain't cheap.
 
@@ -809,7 +842,7 @@ ggplot(titanic, aes(class,age)) + geom_violin() +
 ## Warning: Removed 264 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
 
 From the jitterplots overlayed over top of the violin plots, we can see that a higher concentration of passengers were in third class. Furthermore, the age of passengers in all the classes were concentrated between 20 - 40 years of age. First class appears to have the greatest range in age (ie. the ages are more dispersed than for the second and third classes). First class doesn't have the major concentration of people in the 20 to 40 year age range that second and third class do. 
 
@@ -826,7 +859,7 @@ titanic %>%
   labs(title = "Segmented barplot of survival of first class passengers coloured by sex", x = "Survival (0 = died, 1 = survived)", y = "Count")
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
 
 We can see from the segmented bar plot that the majority of first class females survived, whereas the majority of males died. That said, more males survived than for third class as we will see below...
 
@@ -839,7 +872,7 @@ titanic %>%
   labs(title = "Segmented barplot of survival of third class passengers coloured by sex", x = "Survival (0 = died, 1 = survived)", y = "Count")
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
 
 Quite a difference from the first class results, especially for the females! We can see that roughly half the females in third class died. For the males in first class, almost half of the males survived, whereas for third class the vast majority died.
 
@@ -856,14 +889,14 @@ titanic %>%
   filter(pclass == "1" & survived == "1") %>% # filter by survived and first class rows.
   ggplot(aes(age, fare, colour = sex)) + 
   geom_point() +
-  labs(title = "Scatterplot of survival of first class passengers coloured by sex", x = "Age", y = "Fare")
+  labs(title = "Scatterplot of first class passengers who survived coloured by sex", x = "Age", y = "Fare")
 ```
 
 ```
 ## Warning: Removed 19 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
  
 What do we see in the above scatterplot? 
 
@@ -882,7 +915,7 @@ survival.class3.bysex <- titanic %>%
   filter(pclass == "3" & survived == "1") %>% # filter by survived and third class rows.
   ggplot(aes(age, fare, colour = sex)) + 
   geom_point() + 
-  labs(title = "Scatterplot of survival of third class passengers coloured by sex", x = "Age", y = "Fare")
+  labs(title = "Scatterplot of third class passengers who survived coloured by sex", x = "Age", y = "Fare")
 
 survival.class3.bysex 
 ```
@@ -891,7 +924,8 @@ survival.class3.bysex
 ## Warning: Removed 50 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
+
 
 First, I will discuss some observations on the scatterplot of survival of third class passengers coloured by sex. It looks as though there are slightly more females than males who survived (which confirms our above segmented bar graph observations). However, both the males and females who survived are similarly dispersed. The major concentration of both males and females are within 0 - 40 years of age and paid 7 - 20 dollars for their fare. 
 
@@ -907,7 +941,7 @@ survival.class3.bysex + geom_segment(aes(x = 55, y = 40, xend = 35, yend = 53), 
 ## Warning: Removed 50 rows containing missing values (geom_point).
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
 
 There are two male outliers in third class who paid a higher fare (near 60 dollars) who survived. Also, there is a female outlier after 60 years of age who paid about the average fare.
 
@@ -950,7 +984,7 @@ titanic %>%
 ## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
 
 
 We can see from this dotplot that, aside from the passengers who did not list a home/destination (of which there were many), the greatest frequency of passengers who died were females who were heading from Sweden to Winnipeg, Manitoba. 
