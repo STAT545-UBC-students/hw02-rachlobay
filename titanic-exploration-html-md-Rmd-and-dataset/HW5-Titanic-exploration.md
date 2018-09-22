@@ -157,6 +157,8 @@ tail(titanic) # To see the bottom rows of the Titanic data set
 
 Note that the 1310 row has N/A across its entries. I could omit it, but I will leave it in because that row was initially included in all .csv versions of the Titanic data set that I have found.
 
+In the following code block, I will check to see if the Titanic data set is a list, vector, matrix, or data frame. Then, I will look at the class of the Titanic data set.
+
 
 ```r
 inherits(titanic, "list")     # Is Titanic data in a list? Output is FALSE. So, Titanic data is not a list. 
@@ -191,7 +193,7 @@ inherits(titanic, "data.frame") # Is Titanic data in a data frame? Output is TRU
 ```
 
 ```r
-class(titanic) # class of Titanic is data.frame, which makes sense given our above conclusion that gapminder data is in a data frame.
+class(titanic) # class of Titanic is data.frame, which makes sense given our above conclusion that Titanic data is in a data frame.
 ```
 
 ```
@@ -293,6 +295,8 @@ sapply(titanic, class) # Output: pclass, survived, age, sibsp, and parch are int
 ##    ticket      fare     cabin  embarked      boat      body home.dest 
 ##  "factor" "numeric"  "factor"  "factor"  "factor" "integer"  "factor"
 ```
+
+What can we conclude about the differences in output by using typeof and class? Well, for one thing, typeoffound all the variables to be integers and doubles. On the other hand, class classified seven variables as factors that were classified as integers by using typeof. Finally, the two variables that typeof classified as doubles, which were age and fare, class classified as numeric. 
 
 ## Explore individual variables
 
