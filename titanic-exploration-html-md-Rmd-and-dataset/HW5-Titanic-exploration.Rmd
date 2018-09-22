@@ -15,10 +15,11 @@ output:
     + [Categorical variable exploration](#categorical-variable-exploration)
     + [Quantitative variable exploration](#quantitative-variable-exploration)
 - [Explore various plot types](#explore-various-plot-types)
+    + [Quantitative variable plots](#quantitative-variable-plots)
+    + [One quantitative variable](#one-quantitative-variable)
+    + [A quantitative variable separated by a categorical variable](#a-quantitative-variable-separated-by-a-categorical-variable)
 - [Use filter and select functions and piping](#use-filter-and-select-functions-and-piping)
 - [Evaluation of the gapminder Rwanda and Afghanistan code block](#evaluation-of-the-gapminder-rwanda-and-afghanistan-code-block)
-
-    
 
 ## Introduction 
 
@@ -307,7 +308,9 @@ library(ggplot2) # load ggplot2 package
 
 ### Quantitative variable plots
 
-For the next couple of plots, I will look at age versus fare, both of which are quantitative variables. So, I will first define ggplot function with x as age and y as fare and store it as age.fare.ggplot.
+For the next couple of plots, I will primarily focus on quantitative variables. I will start off by looking at age versus fare. Then, I will look at age versus fare vs ticket price. Finally, I will look at a scatterplot of age versus fare vs ticket price coloured by class (which is a categorical variable). 
+
+First, I will define ggplot function with x as age and y as fare and store it as age.fare.ggplot.
 
 ```{r}
 age.fare.ggplot <- ggplot(titanic, aes(x=age, y=fare))  
@@ -347,7 +350,8 @@ attach(titanic) # So, I don't have to use the dollar sign every time I want to a
 scatterplot3d(age, ticket, fare, pch = 20, main = "Relationship between age, ticket and fare for Titanic passengers") # note pch just indicates the shape of the points on the scatterplot
 ```
 
-Now, I will add colour to the 3d scatterplot by colouring by the passenger class 
+Now, I will add colour to the 3d scatterplot by colouring by the passenger class.
+
 ```{r}
 library(scatterplot3d) # make sure to install scatterplot3d package before using library(scatterplot3d) to load 
 
@@ -396,7 +400,7 @@ ggplot.fare <- ggplot(titanic, aes(fare))
 ggplot.fare + geom_histogram(aes(fill = ..count..)) + labs(x = "fare", y = "frequency",title = "Histogram of Titanic passenger fares") + scale_fill_gradient(low ="blue", high = "red")
 ```
 
-Wheras the histogram included the counts on the y-axis, I will nowlook at a densityplot of the fares of the Titanic passengers, which includes the frequency on the y-axis.
+Wheras the histogram included the **counts** on the y-axis, I will nowlook at a densityplot of the fares of the Titanic passengers, which includes **frequency** on the y-axis.
 
 ```{r}
 # Densityplot of Titanic passenger fares 
@@ -405,7 +409,7 @@ ggplot.fare + geom_density() + labs(x = "fare", y = "frequency",title = "Density
 
 We can see from the densityplot that the highest frequency of passengers paid under $50 dollars for their tickets. 
 
-### One quantitative variable separated by a categorical variable
+### A quantitative variable separated by a categorical variable
 
 I will now colour a density plot of passenger fares by class (ie. a quantitative variable by categorical variable). Note that I will first have to convert pclass to a factor because it is originally an integer (as indicated by typeof and class in the Smell test the data section). In order for ggplot to fill by class, the variable cannot be an integer.
 
