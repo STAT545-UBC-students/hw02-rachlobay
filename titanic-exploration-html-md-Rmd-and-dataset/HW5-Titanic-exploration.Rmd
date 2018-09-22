@@ -5,7 +5,7 @@ output:
         keep_md: true
 ---
 
-# Homework 5: Gapminder Exploration
+# Homework 5: Titanic Exploration
 
 ## Table of Contents:
 
@@ -33,7 +33,9 @@ If you do not have the plyr, tidyverse, knitr, or kableExtra packages installed,
 
 Now, assuming tidyverse and kableExtra have been installed, simply load them using the R code in the code block below.
 
-```{r}
+```{r message=FALSE}
+# I added the above {r message = FALSE} to suppress the message output when the packages below load
+
 library(tidyverse) # load tidyverse
 library(knitr) # for building tables later on
 library(kableExtra) # load kableExtra package, which I will use for building tables later on
@@ -66,7 +68,7 @@ In the following code block, I will check to see if the Titanic data set is a li
 ```{r}
 inherits(titanic, "list")     # Is Titanic data in a list? Output is FALSE. So, Titanic data is not a list. 
 inherits(titanic, "vector") # Is Titanic data in a data frame? Output is FALSE. So, it is not a vector.
-inherits(titanic, "matrix") # Is Titanic data in a data frame? Output is TRUE. So, it is not a matrix.
+inherits(titanic, "matrix") # Is Titanic data in a data frame? Output is FALSE. So, it is not a matrix.
 inherits(titanic, "data.frame") # Is Titanic data in a data frame? Output is TRUE. So, it is a data frame.
 
 class(titanic) # class of Titanic is data.frame, which makes sense given our above conclusion that Titanic data is in a data frame.
@@ -115,7 +117,7 @@ What can we conclude about the differences in output by using typeof and class? 
 
 ## Explore individual variables
 
-First, I will have a quick peak at the head of the gapminder data set to select the variables I will explore.
+First, I will have a quick peak at the head of the Titanic data set to select the variables I will explore.
 
 ```{r}
 head(titanic) # shows the top few rows of the Titanic data set
@@ -200,7 +202,8 @@ Now, I will create a table of the number of males and females and whether they s
 
 ```{r}
 mf.survival <- table(titanic$survive,titanic$sex) # First, we should create a table of the male and female survival.
-mf.survival
+mf.survival # show the output of the table 
+
 addmargins(mf.survival) # We can add margins to get the totals of the rows and columns.
 ```
 
@@ -209,16 +212,18 @@ Here is a stacked bar plot of the male and female survival. Note that dark red w
 We can see in the stacked bar plot that the majority of females survived, while the majority of males perished.
 
 ```{r}
+# stacked bar plot of N/A, female, and male survival
 barplot(mf.survival, xlab = "sex", ylab = "count", main = "Stacked bar plot of N/A, female, and male survival", col = c("blue","darkred"))
 ```
 
-Here is a grouped bar plot to see survival as two different bars for each the males and females.
-
-Similar to the stacked bar plot, we can clearly see from the grouped bar plot that the majority of females survived, while the majority of males perished.
+Below is a grouped bar plot to see survival as two different bars for each the males and females.
 
 ```{r}
+# grouped bar plot of N/A, female, and male survival
 barplot(mf.survival, xlab = "sex", ylab = "count", main = "Grouped bar plot of N/A, female, and male survival", col = c("blue","darkred"), beside = TRUE)
 ```
+
+Similar to the stacked bar plot, we can clearly see from the grouped bar plot that the majority of females survived, while the majority of males perished.
 
 ### Quantitative variable exploration
 
@@ -236,7 +241,7 @@ Note that I will first exclude the NA cases when I calculate the standard deviat
 
 ```{r}
 na.omit.age <- na.omit(titanic$age) # omit cases with NA as age
-head(na.omit.age) # check head to make sure that age values are being displayed as expected.
+head(na.omit.age) # check head to make sure that age values of na.omit.age are being displayed as expected.
 mean(na.omit.age) # check that mean is the same as summary function above.
 sd(na.omit.age) # standard deviation of ages
 ```
@@ -491,13 +496,20 @@ levels(survived.factor) # check the new levels ar as we expect
 
 Next, I will add the new column survived.yes.no to the Titanic data frame.
 
-```{r}
+```{r echo=T, results='hide'}
+# note I hid the output here because the whole Titanic data set will output when we mutate the column
+
 # add the new column survived.yes.no to Titanic data frame
-as.factor(survived)
+survived.factor <- as.factor(survived)
 titanic %>% 
   mutate(survived.yes.no = survived.factor) # use dplyr mutate function to add the new column
 
-head(titanic) # check if new column was added 
+```
+
+We will check the head of the Titanic data set to make sure the new column was created correctly.
+
+```{r}
+head(titanic) # check first six rows of Titanic data set
 ```
 
 Now, my data is ready and I will move on to using the select() function to create some plots. First, I will select only the age, sex, fare, pclass, and survived.yes.no columns, in that order. Next, I will filter by the first class passengers that survived. Finally, from those first class passengers that survived, I will plot age versus fare and colour the scatterplot by sex.
