@@ -11,9 +11,9 @@ In this repo, you will find an .Rmd file that is an exploration of the gapminder
 
 |               | Quick links|
 | ------------- |-------------|
-|  :seedling:   | [Titanic data exploration (.md)](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic-exploration-html-md-Rmd-and-dataset/HW5-Titanic-exploration.md)| 
-|  :seedling:   | [Titanic data exploration (.Rmd)](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic-exploration-html-md-Rmd-and-dataset/HW5-Titanic-exploration.Rmd)| 
-|  :seedling:  | [Titanic data exploration (.html)](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic-exploration-html-md-Rmd-and-dataset/HW5-Titanic-exploration.html)|
-|  :seedling:  | [Titanic data set](https://github.com/STAT545-UBC-students/hw02-rachlobay/tree/master/titanic-exploration-html-md-Rmd-and-dataset/titanic-dataset)|
-|  :seedling:  | [Figures and graph images)](https://github.com/STAT545-UBC-students/hw02-rachlobay/tree/master/titanic-exploration-html-md-Rmd-and-dataset/HW5-Titanic-exploration_files)|
+|  :ship:   | [Titanic data exploration (.md)](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic-exploration-html-md-Rmd-and-dataset/HW5-Titanic-exploration.md)| 
+|  :ship:   | [Titanic data exploration (.Rmd)](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic-exploration-html-md-Rmd-and-dataset/HW5-Titanic-exploration.Rmd)| 
+|  :ship:  | [Titanic data exploration (.html)](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic-exploration-html-md-Rmd-and-dataset/HW5-Titanic-exploration.html)|
+|  :ship:  | [Titanic data set](https://github.com/STAT545-UBC-students/hw02-rachlobay/tree/master/titanic-exploration-html-md-Rmd-and-dataset/titanic-dataset)|
+|  :ship:  | [Figures and graph images)](https://github.com/STAT545-UBC-students/hw02-rachlobay/tree/master/titanic-exploration-html-md-Rmd-and-dataset/HW5-Titanic-exploration_files)|
 
