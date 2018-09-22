@@ -474,14 +474,40 @@ Quite a difference from the first class results, especially for the females! We 
 
 Now, I will incorporate use of the select() function and use it to help make a few informative plots.
 
-First, I will select only the age, sex, fare, pclass, and survive columns, in that order. Next, I will filter by the first class passengers that survived. Finally, from those first class passengers that survived, I will plot age versus fare and colour the scatterplot by sex.
+However, first... I don't like that survived is defined in binary as 0 for died and 1 for survived. So, I will add another column to the titanic data set where, instead of 1 and 0, I will have yes or no. The is similar to how I mutated the new proportion and percent columns in [this section](#categorical-variable-exploration) and again relies on the dplyr package. 
+
+Now, I will convert survived to a factor and change it's factor levels to "no" and "yes".
+
+```{r}
+survived.factor <- as.factor(survived) # convert survived to a factor and store in survived.factor
+
+levels(survived.factor) # check what the factor levels of survived are.
+
+levels(survived.factor) <- c("no","yes") # change the factor levels to "no" and "yes"
+
+levels(survived.factor) # check the new levels ar as we expect
+
+```
+
+Next, I will add the new column survived.yes.no to the Titanic data frame.
+
+```{r}
+# add the new column survived.yes.no to Titanic data frame
+as.factor(survived)
+titanic %>% 
+  mutate(survived.yes.no = survived.factor) # use dplyr mutate function to add the new column
+
+head(titanic) # check if new column was added 
+```
+
+Now, my data is ready and I will move on to using the select() function to create some plots. First, I will select only the age, sex, fare, pclass, and survived.yes.no columns, in that order. Next, I will filter by the first class passengers that survived. Finally, from those first class passengers that survived, I will plot age versus fare and colour the scatterplot by sex.
 
 That seems kind of confusing. Hopefully, stating my objective will help to clear that up. My objective is to find if there is a relationship between age and fare by sex from the first class passengers that survived.
 
 ```{r}
 titanic %>% 
-  select(age, sex, pclass, fare, survived) %>%  # select only age, pclass, fare and survive columns, in that order.
-  filter(pclass == "1" & survived == "1") %>% # filter by survived and first class rows.
+  select(age, sex, pclass, fare, survived.yes.no) %>%  # select only age, pclass, fare and survived.yes.no columns, in that order.
+  filter(pclass == "1" & survived.yes.no == "yes") %>% # filter by survived and first class rows.
   ggplot(aes(age, fare, colour = sex)) + 
   geom_point() +
   labs(title = "Scatterplot of first class passengers who survived coloured by sex", x = "Age", y = "Fare")
@@ -500,8 +526,8 @@ In the above code for the scatterplot, we will only change that we filter by thi
 
 ```{r}
 survival.class3.bysex <- titanic %>% 
-  select(age, sex, pclass, fare, survived) %>%  # select only age, pclass, fare and survive columns, in that order.
-  filter(pclass == "3" & survived == "1") %>% # filter by survived and third class rows.
+  select(age, sex, pclass, fare, survived.yes.no) %>%  # select only age, pclass, fare and survived.yes.no columns, in that order.
+  filter(pclass == "3" & survived.yes.no == "yes") %>% # filter by survived and third class rows.
   ggplot(aes(age, fare, colour = sex)) + 
   geom_point() + 
   labs(title = "Scatterplot of third class passengers who survived coloured by sex", x = "Age", y = "Fare")
@@ -541,7 +567,7 @@ Next, I want to find out what were the popular home/destinations for the adult p
 
 ```{r}
 titanic %>% 
-  filter(survived == "0" & ((age > 18) | (age < 60)) & (count(home.dest)$freq > 4)) %>% #filter by the passengers who died, who were adults (over the age of 18 and under the age of 60), and whose home and destination had a count of at least 4.
+  filter(survived.yes.no == "no" & ((age > 18) | (age < 60)) & (count(home.dest)$freq > 4)) %>% # filter by the passengers who died, who were adults (over the age of 18 and under the age of 60), and whose home and destination had a count of at least 4.
  select(sex, home.dest) %>% # select only the columns of sex and home.dest in that order
       ggplot(aes(home.dest, colour = sex)) + 
       geom_dotplot() + 
@@ -551,7 +577,6 @@ titanic %>%
 
     
 ```
-
 
 We can see from this dotplot that, aside from the passengers who did not list a home/destination (of which there were many), the greatest frequency of passengers who died were females who were heading from Sweden to Winnipeg, Manitoba. 
 
