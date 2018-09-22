@@ -877,12 +877,14 @@ In the above code for the scatterplot, we will only change that we filter by thi
 
 
 ```r
-titanic %>% 
+survival.class3.bysex <- titanic %>% 
   select(age, sex, pclass, fare, survived) %>%  # select only age, pclass, fare and survive columns, in that order.
   filter(pclass == "3" & survived == "1") %>% # filter by survived and third class rows.
   ggplot(aes(age, fare, colour = sex)) + 
-  geom_point() +
+  geom_point() + 
   labs(title = "Scatterplot of survival of third class passengers coloured by sex", x = "Age", y = "Fare")
+
+survival.class3.bysex 
 ```
 
 ```
@@ -892,6 +894,20 @@ titanic %>%
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
 
 First, I will discuss some observations on the scatterplot of survival of third class passengers coloured by sex. It looks as though there are slightly more females than males who survived (which confirms our above segmented bar graph observations). However, both the males and females who survived are similarly dispersed. The major concentration of both males and females are within 0 - 40 years of age and paid 7 - 20 dollars for their fare. 
+
+Next I will add arrows to the previouse scatterplot to point to whether the male and female outliers are located.
+
+
+```r
+survival.class3.bysex + geom_segment(aes(x = 55, y = 40, xend = 35, yend = 53), arrow = arrow(length = unit(0.5, "cm")), color="lightblue", size = 3) + # arrow pointing to male outlier
+   geom_segment(aes(x = 58, y = 40, xend = 62, yend = 14), arrow = arrow(length = unit(0.5, "cm")), color="pink", size = 3) # arrow pointing to female outlier
+```
+
+```
+## Warning: Removed 50 rows containing missing values (geom_point).
+```
+
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
 
 There are two male outliers in third class who paid a higher fare (near 60 dollars) who survived. Also, there is a female outlier after 60 years of age who paid about the average fare.
 
@@ -934,7 +950,7 @@ titanic %>%
 ## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
 
 
 We can see from this dotplot that, aside from the passengers who did not list a home/destination (of which there were many), the greatest frequency of passengers who died were females who were heading from Sweden to Winnipeg, Manitoba. 
