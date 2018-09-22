@@ -336,7 +336,7 @@ The interactive 3D plot from rgl will not show up in Github. After downloading, 
 
 Here is a screenshot of the rgl 3D scatterplot:
 
-![3D rgl scatterplot](figure-html/3d_rgl_scatterplot.png)
+![3D rgl scatterplot](HW5-Titanic-exploration_files/figure-html/3d_rgl_scatterplot.png)
 
 Now, I will examine a plot of one quantitative variable. I shall look at a dotplot of the fares
 

@@ -86,7 +86,7 @@ Next, I will read the titanic.csv in. Note that I put the titanic.csv in this gi
 
 
 ```r
-titanic <- read.csv("titanic.csv") # read titanic.csv in
+titanic <- read.csv("titanic-dataset/titanic.csv") # read titanic.csv in
 ```
 
 To see that our data set got imported properly into R Studio (ie. so that the structure is what we expect), I will peak at the head of the data set.
@@ -723,7 +723,7 @@ The interactive 3D plot from rgl will not show up in Github. After downloading, 
 
 Here is a screenshot of the rgl 3D scatterplot:
 
-![3D rgl scatterplot](3d_rgl_scatterplot.png)
+![3D rgl scatterplot](HW5-Titanic-exploration_files/figure-html/3d_rgl_scatterplot.png)
 
 Now, I will examine a plot of one quantitative variable. I shall look at a dotplot of the fares
 
