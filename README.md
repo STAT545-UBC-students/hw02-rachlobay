@@ -1,5 +1,4 @@
 # Homework 2 README.md
-hw02-rachlobay created by GitHub Classroom
 
 ## What is this repo. for?
 
