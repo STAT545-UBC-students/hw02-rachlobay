@@ -32,7 +32,7 @@ Note that plyr is necessary to load after for this project because otherwise whe
 Next, I will read the titanic.csv in. Note that I put the titanic.csv in this github repo [here](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic.csv).
 
 ```{r}
-titanic <- read.csv("/titanic-dataset/titanic.csv") # read titanic.csv in
+titanic <- read.csv("titanic.csv") # read titanic.csv in
 ```
 
 To see that our data set got imported properly into R Studio (ie. so that the structure is what we expect), I will peak at the head of the data set.
