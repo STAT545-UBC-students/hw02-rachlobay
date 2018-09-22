@@ -110,7 +110,7 @@ sapply(titanic, typeof) # Output: pclass, survived, name, sex, sibsp, parch, tic
 sapply(titanic, class) # Output: pclass, survived, age, sibsp, and parch are integers, while name, sex, ticket, cabin, embarked, boat, and home.dest are factors, while age and fare are numeric.
 ```
 
-What can we conclude about the differences in output by using typeof and class? Well, for one thing, typeoffound all the variables to be integers and doubles. On the other hand, class classified seven variables as factors that were classified as integers by using typeof. Finally, the two variables that typeof classified as doubles, which were age and fare, class classified as numeric. 
+What can we conclude about the differences in output by using typeof and class? Well, for one thing, typeof found all the variables to be integers and doubles. On the other hand, class classified seven variables as factors that were classified as integers by using typeof. Finally, the two variables that typeof classified as doubles, which were age and fare, class classified as numeric. 
 
 ## Explore individual variables
 
@@ -267,6 +267,8 @@ From the histogram, we can see that calculation for the mode is reasonable. We c
 
 Additionally, from the age histogram, we can see that the distribution is unimodal (one mode), the skew is positive (because there is a longer right tail).
 
+
+
 We can overlay the normal curve over the histogram to see if the distribution of ages is approximately normal. Note that I used the histogram of ages from the above R code. I tried to explain each step in the code block below. See (here)[https://www.statmethods.net/graphs/density.html] for the original code to overlay a normal curve over a histogram.
 
 ```{r}
@@ -303,7 +305,9 @@ Note, I have assumed that you have already installed ggplot2 on your computer. I
 library(ggplot2) # load ggplot2 package
 ```
 
-For the next couple of plots, I willI will look at age versus fare, both of which are quantitative variables. So, I will first define ggplot function with x as age and y as fare and store it as age.fare.ggplot.
+### Quantitative variable plots
+
+For the next couple of plots, I will look at age versus fare, both of which are quantitative variables. So, I will first define ggplot function with x as age and y as fare and store it as age.fare.ggplot.
 
 ```{r}
 age.fare.ggplot <- ggplot(titanic, aes(x=age, y=fare))  
@@ -380,15 +384,30 @@ Here is a screenshot of the rgl 3D scatterplot:
 
 ![3D rgl scatterplot](HW5-Titanic-exploration_files/figure-html/3d_rgl_scatterplot.png)
 
-Now, I will examine a plot of one quantitative variable. I shall look at a dotplot of the fares
+### One quantitative variable
+
+Now, I will examine a plot of one quantitative variable, fares. I will first look at a histogram of the fares. This histogram will include a gradient colour scale, where blue = low count and red = high count for an enhanced viewing experience. 
 
 ```{r}
-ggplot(titanic, aes(fare)) + geom_density() + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares")
+# Store ggplot of fare as variable ggplot.fare
+ggplot.fare <- ggplot(titanic, aes(fare)) 
 
+# histogram of Titanic passenger fares with a gradient colour scale 
+ggplot.fare + geom_histogram(aes(fill = ..count..)) + labs(x = "fare", y = "frequency",title = "Histogram of Titanic passenger fares") + scale_fill_gradient(low ="blue", high = "red")
 ```
+
+Wheras the histogram included the counts on the y-axis, I will nowlook at a densityplot of the fares of the Titanic passengers, which includes the frequency on the y-axis.
+
+```{r}
+# Densityplot of Titanic passenger fares 
+ggplot.fare + geom_density() + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares")
+```
+
 We can see from the densityplot that the highest frequency of passengers paid under $50 dollars for their tickets. 
 
-I will now colour a density plot of passenger fares by class. Note that I will first have to convert pclass to a factor because it is originally an integer (as indicated by typeof and class in the Smell test the data section). In order for ggplot to fill by class, the variable cannot be an integer.
+### One quantitative variable separated by a categorical variable
+
+I will now colour a density plot of passenger fares by class (ie. a quantitative variable by categorical variable). Note that I will first have to convert pclass to a factor because it is originally an integer (as indicated by typeof and class in the Smell test the data section). In order for ggplot to fill by class, the variable cannot be an integer.
 
 ```{r}
 class <- as.factor(titanic$pclass) # I first had to convert pclass to factor to get ggplot to fill by class
@@ -404,7 +423,7 @@ From this densityplot of fares by class, we can see that the majority of people 
 Next, we shall look at a histogram of the fares (quantitative variable), which are coloured by the class of the passengers (categorical variable because there are three classes). Note that the values that were listed as NA or that were just blank were automatically removed. There should be a caution sign to indicate this in R Studio.
 
 ```{r}
-
+# histogram of fares coloured by class
 ggplot.fare.class +
   geom_histogram(bins = 30) + 
   labs(title = "Bar plots of Titanic passenger fares by class")
@@ -415,6 +434,7 @@ We can see that as the fare increases, the number of first class passenger incre
 We can display the plot of Titanic passengers age by class using a jitterplot overlayed on top of a violin plot. As was the case for previous graphs, the missing or non-finite values were removed automatically.
 
 ```{r}
+# jitterplot overlayed on top of a violin plot
 ggplot(titanic, aes(class,age)) + geom_violin() + 
   geom_jitter(alpha = 0.2) + 
   labs(title = "Jitterplots overlayed over violin plots of Titanic passenger age by class")
@@ -589,7 +609,4 @@ filter(gapminder, country %in% c("Rwanda", "Afghanistan"))
 ```
 
 Now, the correct output is produced. We have a total of 24 rows, 12 of which are for Afghanistan and 12 are for Rwanda. Case closed. 
-
-
-
 
