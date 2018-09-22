@@ -2,11 +2,23 @@
 title: "HW5-Titanic-exploration"
 output:
     html_document:
-        toc: true
         keep_md: true
 ---
 
 # Homework 5: Gapminder Exploration
+
+## Table of Contents:
+
+- [Introduction](#introduction)
+- [Smell test the data](#smell-test-the-data)
+- [Explore individual variables](#explore-individual-variables)
+    + [Categorical variable exploration](#categorical-variable-exploration)
+    + [Quantitative variable exploration](#quantitative-variable-exploration)
+- [Explore various plot types](#explore-various-plot-types)
+- [Use filter and select functions and piping](#use-filter-and-select-functions-and-piping)
+- [Evaluation of the gapminder Rwanda and Afghanistan code block](#evaluation-of-the-gapminder-rwanda-and-afghanistan-code-block)
+
+    
 
 ## Introduction 
 
@@ -315,7 +327,8 @@ head(titanic) # shows the top few rows of the Titanic data set
 ## 6                    New York, NY
 ```
 
-### Categorical variable exploration - sex
+### Categorical variable exploration
+
 The categorical variable I chose to explore is sex. I can access the data for this variable by typing titanic$sex. 
 
 We want to find whether there are more male or female passengers. We can use the table function for this categorical variable to see the counts of the males and females.
@@ -509,7 +522,7 @@ barplot(mf.survival, xlab = "sex", ylab = "count", main = "Grouped bar plot of N
 
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
 
-### Quantitative variable exploration - age
+### Quantitative variable exploration
 
 
 ```r
@@ -796,7 +809,7 @@ ggplot(titanic, aes(class,age)) + geom_violin() +
 
 From the jitterplots overlayed over top of the violin plots, we can see that a higher concentration of passengers were in third class. Furthermore, the age of passengers in all the classes were concentrated between 20 - 40 years of age. First class appears to have the greatest range in age (ie. the ages are more dispersed than for the second and third classes). First class doesn't have the major concentration of people in the 20 to 40 year age range that second and third class do. 
 
-## Use filter(), select(), and %>% 
+## Use filter and select functions and piping
 
 First I will filter data to first class and plot the survival of first class passengers coloured by sex.
 
