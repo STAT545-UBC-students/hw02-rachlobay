@@ -46,8 +46,10 @@ Note that plyr is necessary to load after for this project because otherwise whe
 
 Next, I will read the titanic.csv in. Note that I put the titanic.csv in this github repo [here](https://github.com/STAT545-UBC-students/hw02-rachlobay/blob/master/titanic.csv).
 
-```{r}
+```{r message=FALSE}
 titanic <- read.csv("titanic-dataset/titanic.csv") # read titanic.csv in
+
+attach(titanic) # So, I don't have to use the dollar sign every time I want to access a variable from the data
 ```
 
 To see that our data set got imported properly into R Studio (ie. so that the structure is what we expect), I will peak at the head of the data set.
@@ -329,7 +331,7 @@ library(hexbin) # load hexbin package
 
 The geom_hex() function produces a scatterplot of hexagons. It also provides a 2D density plot showing the relationship between the two quantitative variables. Notice there is a legend to the right of the hex bin plot that shows how to interpret the gradient of colours (ie. what colour in the gradient corresponds to a higher count or density). As a side note, when we run the following code, notice that the rows containing missing or NA data values are automatically removed. So, the data that is being looked at is only the data in the data set that has **finite** values for age and fare. 
 
-```{r}
+```{r warning = FALSE}
 # create hex bin plot of Titanic passenger age versus fare
 age.fare.ggplot + geom_hex() +
   labs(title="Hex bin plot of Titanic passenger age versus fare") 
@@ -337,7 +339,7 @@ age.fare.ggplot + geom_hex() +
 
 Next, we shall ilustrate the same passenger age versus fare data using a scatterplot. Again, note that the rows containing missing or NA data values are automatically removed.
 
-```{r}
+```{r warning = FALSE}
 # create scatterplot of Titanic passenger age versus fare
 ggplot(titanic, aes(x = age, y = fare)) + geom_point() +
   labs(title="Scatterplot of Titanic passenger age versus fare")
@@ -349,8 +351,6 @@ Interestingly, we could do a 3D scatterplot by installing and loading the scatte
 
 ```{r}
 library(scatterplot3d) # make sure to install scatterplot3d package before using library(scatterplot3d) to load 
-
-attach(titanic) # So, I don't have to use the dollar sign every time I want to access a variable from the data
 
 scatterplot3d(age, ticket, fare, pch = 20, main = "Relationship between age, ticket and fare for Titanic passengers") # note pch just indicates the shape of the points on the scatterplot
 ```
@@ -397,7 +397,7 @@ Here is a screenshot of the rgl 3D scatterplot:
 
 Now, I will examine a plot of one quantitative variable, fares. I will first look at a histogram of the fares. This histogram will include a gradient colour scale, where blue = low count and red = high count for an enhanced viewing experience. 
 
-```{r}
+```{r warning = FALSE}
 # Store ggplot of fare as variable ggplot.fare
 ggplot.fare <- ggplot(titanic, aes(fare)) 
 
@@ -407,7 +407,7 @@ ggplot.fare + geom_histogram(aes(fill = ..count..)) + labs(x = "fare", y = "freq
 
 Wheras the histogram included the **counts** on the y-axis, I will nowlook at a densityplot of the fares of the Titanic passengers, which includes **frequency** on the y-axis.
 
-```{r}
+```{r warning = FALSE}
 # Densityplot of Titanic passenger fares 
 ggplot.fare + geom_density() + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares")
 ```
@@ -418,7 +418,7 @@ We can see from the densityplot that the highest frequency of passengers paid un
 
 I will now colour a density plot of passenger fares by class (ie. a quantitative variable by categorical variable). Note that I will first have to convert pclass to a factor because it is originally an integer (as indicated by typeof and class in the Smell test the data section). In order for ggplot to fill by class, the variable cannot be an integer.
 
-```{r}
+```{r warning = FALSE}
 class <- as.factor(titanic$pclass) # I first had to convert pclass to factor to get ggplot to fill by class
 
 ggplot.fare.class <- ggplot(titanic, aes(fare, group=class, fill=class)) # create variable ggplot.fare.class so we can use this base code for multiple plots
@@ -431,7 +431,7 @@ From this densityplot of fares by class, we can see that the majority of people 
 
 Next, we shall look at a histogram of the fares (quantitative variable), which are coloured by the class of the passengers (categorical variable because there are three classes). Note that the values that were listed as NA or that were just blank were automatically removed. There should be a caution sign to indicate this in R Studio.
 
-```{r}
+```{r warning = FALSE}
 # histogram of fares coloured by class
 ggplot.fare.class +
   geom_histogram(bins = 30) + 
@@ -442,7 +442,7 @@ We can see that as the fare increases, the number of first class passenger incre
 
 We can display the plot of Titanic passengers age by class using a jitterplot overlayed on top of a violin plot. As was the case for previous graphs, the missing or non-finite values were removed automatically.
 
-```{r}
+```{r warning = FALSE}
 # jitterplot overlayed on top of a violin plot
 ggplot(titanic, aes(class,age)) + geom_violin() + 
   geom_jitter(alpha = 0.2) + 
@@ -481,42 +481,26 @@ Now, I will incorporate use of the select() function and use it to help make a f
 
 However, first... I don't like that survived is defined in binary as 0 for died and 1 for survived. So, I will add another column to the titanic data set where, instead of 1 and 0, I will have yes or no. The is similar to how I mutated the new proportion and percent columns in [this section](#categorical-variable-exploration) and again relies on the dplyr package. 
 
-Now, I will convert survived to a factor and change it's factor levels to "no" and "yes".
+I will add the new column survived.yes.no, which is the factor version of survived, to the Titanic data frame. Then, I will change the factor levels of survived.yes.no to "no" and "yes".
 
 ```{r}
-survived.factor <- as.factor(survived) # convert survived to a factor and store in survived.factor
-
-levels(survived.factor) # check what the factor levels of survived are.
-
-levels(survived.factor) <- c("no","yes") # change the factor levels to "no" and "yes"
-
-levels(survived.factor) # check the new levels ar as we expect
-
-```
-
-Next, I will add the new column survived.yes.no to the Titanic data frame.
-
-```{r echo=T, results='hide'}
-# note I hid the output here because the whole Titanic data set will output when we mutate the column
-
 # add the new column survived.yes.no to Titanic data frame
-survived.factor <- as.factor(survived)
-titanic %>% 
-  mutate(survived.yes.no = survived.factor) # use dplyr mutate function to add the new column
 
-```
+titanic <- titanic %>% 
+  mutate(survived.yes.no = as.factor(survived))  # use dplyr mutate function to add the new column
 
-We will check the head of the Titanic data set to make sure the new column was created correctly.
+levels(titanic$survived.yes.no) <- c("no","yes") # change the factor levels to "no" and "yes"
 
-```{r}
-head(titanic) # check first six rows of Titanic data set
+head(titanic) # print first 6 rows to make sure the output of the new column is as expected
+
+
 ```
 
 Now, my data is ready and I will move on to using the select() function to create some plots. First, I will select only the age, sex, fare, pclass, and survived.yes.no columns, in that order. Next, I will filter by the first class passengers that survived. Finally, from those first class passengers that survived, I will plot age versus fare and colour the scatterplot by sex.
 
 That seems kind of confusing. Hopefully, stating my objective will help to clear that up. My objective is to find if there is a relationship between age and fare by sex from the first class passengers that survived.
 
-```{r}
+```{r warning = FALSE}
 titanic %>% 
   select(age, sex, pclass, fare, survived.yes.no) %>%  # select only age, pclass, fare and survived.yes.no columns, in that order.
   filter(pclass == "1" & survived.yes.no == "yes") %>% # filter by survived and first class rows.
@@ -536,7 +520,7 @@ For both males and females, the most frequent fare for first class passengers wh
 
 In the above code for the scatterplot, we will only change that we filter by third class instead of the first (ie. the rest of the code is the same). What do we find?
 
-```{r}
+```{r warning = FALSE}
 survival.class3.bysex <- titanic %>% 
   select(age, sex, pclass, fare, survived.yes.no) %>%  # select only age, pclass, fare and survived.yes.no columns, in that order.
   filter(pclass == "3" & survived.yes.no == "yes") %>% # filter by survived and third class rows.
@@ -552,7 +536,7 @@ First, I will discuss some observations on the scatterplot of survival of third 
 
 Next I will add arrows to the previouse scatterplot to point to whether the male and female outliers are located.
 
-```{r}
+```{r warning = FALSE}
 survival.class3.bysex + geom_segment(aes(x = 55, y = 40, xend = 35, yend = 53), arrow = arrow(length = unit(0.5, "cm")), color="lightblue", size = 3) + # arrow pointing to male outlier
    geom_segment(aes(x = 58, y = 40, xend = 62, yend = 14), arrow = arrow(length = unit(0.5, "cm")), color="pink", size = 3) # arrow pointing to female outlier
 ```
@@ -577,7 +561,7 @@ First, make sure the plyr package is installed and loaded. We want to do this so
 
 Next, I want to find out what were the popular home/destinations for the adult passengers who died. I further want to see the difference in destinations for males and females. I will use a dotplot to investigate this. Note that I am using a count of the home.dest of **greater than 4**.
 
-```{r}
+```{r warning = FALSE}
 titanic %>% 
   filter(survived.yes.no == "no" & ((age > 18) | (age < 60)) & (count(home.dest)$freq > 4)) %>% # filter by the passengers who died, who were adults (over the age of 18 and under the age of 60), and whose home and destination had a count of at least 4.
  select(sex, home.dest) %>% # select only the columns of sex and home.dest in that order

@@ -5,7 +5,7 @@ output:
         keep_md: true
 ---
 
-# Homework 5: Gapminder Exploration
+# Homework 5: Titanic Exploration
 
 ## Table of Contents:
 
@@ -35,62 +35,12 @@ Now, assuming tidyverse and kableExtra have been installed, simply load them usi
 
 
 ```r
+# I added the above {r message = FALSE} to suppress the message output when the packages below load
+
 library(tidyverse) # load tidyverse
-```
-
-```
-## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──
-```
-
-```
-## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
-## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
-## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
-## ✔ readr   1.1.1     ✔ forcats 0.3.0
-```
-
-```
-## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-```
-
-```r
 library(knitr) # for building tables later on
 library(kableExtra) # load kableExtra package, which I will use for building tables later on
 library(plyr) # load plyr
-```
-
-```
-## -------------------------------------------------------------------------
-```
-
-```
-## You have loaded plyr after dplyr - this is likely to cause problems.
-## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
-## library(plyr); library(dplyr)
-```
-
-```
-## -------------------------------------------------------------------------
-```
-
-```
-## 
-## Attaching package: 'plyr'
-```
-
-```
-## The following objects are masked from 'package:dplyr':
-## 
-##     arrange, count, desc, failwith, id, mutate, rename, summarise,
-##     summarize
-```
-
-```
-## The following object is masked from 'package:purrr':
-## 
-##     compact
 ```
 
 Note that plyr is necessary to load after for this project because otherwise when I start to change levels of  categorical variables (titanic$sex levels) later on, we will get an error.
@@ -100,6 +50,8 @@ Next, I will read the titanic.csv in. Note that I put the titanic.csv in this gi
 
 ```r
 titanic <- read.csv("titanic-dataset/titanic.csv") # read titanic.csv in
+
+attach(titanic) # So, I don't have to use the dollar sign every time I want to access a variable from the data
 ```
 
 To see that our data set got imported properly into R Studio (ie. so that the structure is what we expect), I will peak at the head of the data set.
@@ -178,7 +130,7 @@ inherits(titanic, "vector") # Is Titanic data in a data frame? Output is FALSE. 
 ```
 
 ```r
-inherits(titanic, "matrix") # Is Titanic data in a data frame? Output is TRUE. So, it is not a matrix.
+inherits(titanic, "matrix") # Is Titanic data in a data frame? Output is FALSE. So, it is not a matrix.
 ```
 
 ```
@@ -301,7 +253,7 @@ What can we conclude about the differences in output by using typeof and class? 
 
 ## Explore individual variables
 
-First, I will have a quick peak at the head of the gapminder data set to select the variables I will explore.
+First, I will have a quick peak at the head of the Titanic data set to select the variables I will explore.
 
 
 ```r
@@ -483,7 +435,7 @@ Now, I will create a table of the number of males and females and whether they s
 
 ```r
 mf.survival <- table(titanic$survive,titanic$sex) # First, we should create a table of the male and female survival.
-mf.survival
+mf.survival # show the output of the table 
 ```
 
 ```
@@ -511,21 +463,23 @@ We can see in the stacked bar plot that the majority of females survived, while 
 
 
 ```r
+# stacked bar plot of N/A, female, and male survival
 barplot(mf.survival, xlab = "sex", ylab = "count", main = "Stacked bar plot of N/A, female, and male survival", col = c("blue","darkred"))
 ```
 
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 
-Here is a grouped bar plot to see survival as two different bars for each the males and females.
-
-Similar to the stacked bar plot, we can clearly see from the grouped bar plot that the majority of females survived, while the majority of males perished.
+Below is a grouped bar plot to see survival as two different bars for each the males and females.
 
 
 ```r
+# grouped bar plot of N/A, female, and male survival
 barplot(mf.survival, xlab = "sex", ylab = "count", main = "Grouped bar plot of N/A, female, and male survival", col = c("blue","darkred"), beside = TRUE)
 ```
 
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+
+Similar to the stacked bar plot, we can clearly see from the grouped bar plot that the majority of females survived, while the majority of males perished.
 
 ### Quantitative variable exploration
 
@@ -550,7 +504,7 @@ Note that I will first exclude the NA cases when I calculate the standard deviat
 
 ```r
 na.omit.age <- na.omit(titanic$age) # omit cases with NA as age
-head(na.omit.age) # check head to make sure that age values are being displayed as expected.
+head(na.omit.age) # check head to make sure that age values of na.omit.age are being displayed as expected.
 ```
 
 ```
@@ -708,10 +662,6 @@ age.fare.ggplot + geom_hex() +
   labs(title="Hex bin plot of Titanic passenger age versus fare") 
 ```
 
-```
-## Warning: Removed 265 rows containing non-finite values (stat_binhex).
-```
-
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
 Next, we shall ilustrate the same passenger age versus fare data using a scatterplot. Again, note that the rows containing missing or NA data values are automatically removed.
@@ -723,10 +673,6 @@ ggplot(titanic, aes(x = age, y = fare)) + geom_point() +
   labs(title="Scatterplot of Titanic passenger age versus fare")
 ```
 
-```
-## Warning: Removed 265 rows containing missing values (geom_point).
-```
-
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
 We can see there are three outliers with fares above 500 dollars. The majority of fares are concentrated under 100 dollars, which makes sense because there were more third-class passengers than first-class passengers, who paid more money for their ticket fare. Finally, there are more younger passengers than older passengers on the scatterplot. This means that we don't see many passengers over the age of 70 on the scatterplot.
@@ -736,8 +682,6 @@ Interestingly, we could do a 3D scatterplot by installing and loading the scatte
 
 ```r
 library(scatterplot3d) # make sure to install scatterplot3d package before using library(scatterplot3d) to load 
-
-attach(titanic) # So, I don't have to use the dollar sign every time I want to access a variable from the data
 
 scatterplot3d(age, ticket, fare, pch = 20, main = "Relationship between age, ticket and fare for Titanic passengers") # note pch just indicates the shape of the points on the scatterplot
 ```
@@ -803,10 +747,6 @@ ggplot.fare + geom_histogram(aes(fill = ..count..)) + labs(x = "fare", y = "freq
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-```
-## Warning: Removed 2 rows containing non-finite values (stat_bin).
-```
-
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 
 Wheras the histogram included the **counts** on the y-axis, I will nowlook at a densityplot of the fares of the Titanic passengers, which includes **frequency** on the y-axis.
@@ -815,10 +755,6 @@ Wheras the histogram included the **counts** on the y-axis, I will nowlook at a 
 ```r
 # Densityplot of Titanic passenger fares 
 ggplot.fare + geom_density() + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares")
-```
-
-```
-## Warning: Removed 2 rows containing non-finite values (stat_density).
 ```
 
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
@@ -838,10 +774,6 @@ ggplot.fare.class <- ggplot(titanic, aes(fare, group=class, fill=class)) # creat
 ggplot.fare.class + geom_density() + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares by class") # densityplot of Titanic passenger fares by class
 ```
 
-```
-## Warning: Removed 2 rows containing non-finite values (stat_density).
-```
-
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
 
 From this densityplot of fares by class, we can see that the majority of people who paid under fifty dollars for a ticket were from first class. This observation makes sense because we would expect that third class passengers paid less than first class passengers. Also, we can see that only the first class passengers had higher fares over 100 dollars.
@@ -856,10 +788,6 @@ ggplot.fare.class +
   labs(title = "Bar plots of Titanic passenger fares by class")
 ```
 
-```
-## Warning: Removed 2 rows containing non-finite values (stat_bin).
-```
-
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
 
 We can see that as the fare increases, the number of first class passenger increases. This makes sense because first class passengers were required to pay a higher fare than third class passengers. The luxuries of first class ain't cheap.
@@ -872,14 +800,6 @@ We can display the plot of Titanic passengers age by class using a jitterplot ov
 ggplot(titanic, aes(class,age)) + geom_violin() + 
   geom_jitter(alpha = 0.2) + 
   labs(title = "Jitterplots overlayed over violin plots of Titanic passenger age by class")
-```
-
-```
-## Warning: Removed 264 rows containing non-finite values (stat_ydensity).
-```
-
-```
-## Warning: Removed 264 rows containing missing values (geom_point).
 ```
 
 ![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
@@ -918,25 +838,61 @@ Quite a difference from the first class results, especially for the females! We 
 
 Now, I will incorporate use of the select() function and use it to help make a few informative plots.
 
-First, I will select only the age, sex, fare, pclass, and survive columns, in that order. Next, I will filter by the first class passengers that survived. Finally, from those first class passengers that survived, I will plot age versus fare and colour the scatterplot by sex.
+However, first... I don't like that survived is defined in binary as 0 for died and 1 for survived. So, I will add another column to the titanic data set where, instead of 1 and 0, I will have yes or no. The is similar to how I mutated the new proportion and percent columns in [this section](#categorical-variable-exploration) and again relies on the dplyr package. 
+
+I will add the new column survived.yes.no, which is the factor version of survived, to the Titanic data frame. Then, I will change the factor levels of survived.yes.no to "no" and "yes".
+
+
+```r
+# add the new column survived.yes.no to Titanic data frame
+
+titanic <- titanic %>% 
+  mutate(survived.yes.no = as.factor(survived))  # use dplyr mutate function to add the new column
+
+levels(titanic$survived.yes.no) <- c("no","yes") # change the factor levels to "no" and "yes"
+
+head(titanic) # print first 6 rows to make sure the output of the new column is as expected
+```
+
+```
+##   pclass survived                                            name    sex
+## 1      1        1                   Allen, Miss. Elisabeth Walton female
+## 2      1        1                  Allison, Master. Hudson Trevor   male
+## 3      1        0                    Allison, Miss. Helen Loraine female
+## 4      1        0            Allison, Mr. Hudson Joshua Creighton   male
+## 5      1        0 Allison, Mrs. Hudson J C (Bessie Waldo Daniels) female
+## 6      1        1                             Anderson, Mr. Harry   male
+##       age sibsp parch ticket     fare   cabin embarked boat body
+## 1 29.0000     0     0  24160 211.3375      B5        S    2   NA
+## 2  0.9167     1     2 113781 151.5500 C22 C26        S   11   NA
+## 3  2.0000     1     2 113781 151.5500 C22 C26        S        NA
+## 4 30.0000     1     2 113781 151.5500 C22 C26        S       135
+## 5 25.0000     1     2 113781 151.5500 C22 C26        S        NA
+## 6 48.0000     0     0  19952  26.5500     E12        S    3   NA
+##                         home.dest survived.yes.no
+## 1                    St Louis, MO             yes
+## 2 Montreal, PQ / Chesterville, ON             yes
+## 3 Montreal, PQ / Chesterville, ON              no
+## 4 Montreal, PQ / Chesterville, ON              no
+## 5 Montreal, PQ / Chesterville, ON              no
+## 6                    New York, NY             yes
+```
+
+Now, my data is ready and I will move on to using the select() function to create some plots. First, I will select only the age, sex, fare, pclass, and survived.yes.no columns, in that order. Next, I will filter by the first class passengers that survived. Finally, from those first class passengers that survived, I will plot age versus fare and colour the scatterplot by sex.
 
 That seems kind of confusing. Hopefully, stating my objective will help to clear that up. My objective is to find if there is a relationship between age and fare by sex from the first class passengers that survived.
 
 
 ```r
 titanic %>% 
-  select(age, sex, pclass, fare, survived) %>%  # select only age, pclass, fare and survive columns, in that order.
-  filter(pclass == "1" & survived == "1") %>% # filter by survived and first class rows.
+  select(age, sex, pclass, fare, survived.yes.no) %>%  # select only age, pclass, fare and survived.yes.no columns, in that order.
+  filter(pclass == "1" & survived.yes.no == "yes") %>% # filter by survived and first class rows.
   ggplot(aes(age, fare, colour = sex)) + 
   geom_point() +
   labs(title = "Scatterplot of first class passengers who survived coloured by sex", x = "Age", y = "Fare")
 ```
 
-```
-## Warning: Removed 19 rows containing missing values (geom_point).
-```
-
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
  
 What do we see in the above scatterplot? 
 
@@ -951,8 +907,8 @@ In the above code for the scatterplot, we will only change that we filter by thi
 
 ```r
 survival.class3.bysex <- titanic %>% 
-  select(age, sex, pclass, fare, survived) %>%  # select only age, pclass, fare and survive columns, in that order.
-  filter(pclass == "3" & survived == "1") %>% # filter by survived and third class rows.
+  select(age, sex, pclass, fare, survived.yes.no) %>%  # select only age, pclass, fare and survived.yes.no columns, in that order.
+  filter(pclass == "3" & survived.yes.no == "yes") %>% # filter by survived and third class rows.
   ggplot(aes(age, fare, colour = sex)) + 
   geom_point() + 
   labs(title = "Scatterplot of third class passengers who survived coloured by sex", x = "Age", y = "Fare")
@@ -960,11 +916,7 @@ survival.class3.bysex <- titanic %>%
 survival.class3.bysex 
 ```
 
-```
-## Warning: Removed 50 rows containing missing values (geom_point).
-```
-
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
 
 
 First, I will discuss some observations on the scatterplot of survival of third class passengers coloured by sex. It looks as though there are slightly more females than males who survived (which confirms our above segmented bar graph observations). However, both the males and females who survived are similarly dispersed. The major concentration of both males and females are within 0 - 40 years of age and paid 7 - 20 dollars for their fare. 
@@ -977,11 +929,7 @@ survival.class3.bysex + geom_segment(aes(x = 55, y = 40, xend = 35, yend = 53), 
    geom_segment(aes(x = 58, y = 40, xend = 62, yend = 14), arrow = arrow(length = unit(0.5, "cm")), color="pink", size = 3) # arrow pointing to female outlier
 ```
 
-```
-## Warning: Removed 50 rows containing missing values (geom_point).
-```
-
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
 
 There are two male outliers in third class who paid a higher fare (near 60 dollars) who survived. Also, there is a female outlier after 60 years of age who paid about the average fare.
 
@@ -1006,7 +954,7 @@ Next, I want to find out what were the popular home/destinations for the adult p
 
 ```r
 titanic %>% 
-  filter(survived == "0" & ((age > 18) | (age < 60)) & (count(home.dest)$freq > 4)) %>% #filter by the passengers who died, who were adults (over the age of 18 and under the age of 60), and whose home and destination had a count of at least 4.
+  filter(survived.yes.no == "no" & ((age > 18) | (age < 60)) & (count(home.dest)$freq > 4)) %>% # filter by the passengers who died, who were adults (over the age of 18 and under the age of 60), and whose home and destination had a count of at least 4.
  select(sex, home.dest) %>% # select only the columns of sex and home.dest in that order
       ggplot(aes(home.dest, colour = sex)) + 
       geom_dotplot() + 
@@ -1016,16 +964,10 @@ titanic %>%
 ```
 
 ```
-## Warning in survived == "0" & ((age > 18) | (age < 60)) & (count(home.dest)
-## $freq > : longer object length is not a multiple of shorter object length
-```
-
-```
 ## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
-
+![](HW5-Titanic-exploration_files/figure-html/unnamed-chunk-48-1.png)<!-- -->
 
 We can see from this dotplot that, aside from the passengers who did not list a home/destination (of which there were many), the greatest frequency of passengers who died were females who were heading from Sweden to Winnipeg, Manitoba. 
 
