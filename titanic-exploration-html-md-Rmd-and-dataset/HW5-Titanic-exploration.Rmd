@@ -270,11 +270,12 @@ Additionally, from the age histogram, we can see that the distribution is unimod
 We can overlay the normal curve over the histogram to see if the distribution of ages is approximately normal. Note that I used the histogram of ages from the above R code. I tried to explain each step in the code block below. See (here)[https://www.statmethods.net/graphs/density.html] for the original code to overlay a normal curve over a histogram.
 
 ```{r}
+# create the normal curve using xfit and yfit
 xfit <- seq(min(na.omit.age), max(na.omit.age)) # the sequence of ages in na.omit.age 
 yfit <- dnorm(xfit, mean = mean(na.omit.age), sd = sd(na.omit.age)) # fit the density of the normal distirbution to the age values in our data set with mean and standard deviaton of the ages in our data set
 yfit <- yfit * diff(hist.ages$mids[1:2]) * length(na.omit.age) # our yfit is built from the density of the normal distibution multiplied by the size of the bins, which is diff(hist.ages$mids[1:2]), and multiplied by the number of ages from our data.
 
-plot(hist.ages) # Plot histogram of ages from above R code.
+plot(hist.ages, xlab="Age",ylab="Frequency", main="Frequency of the ages for the Titanic passengers") # Plot histogram of ages from above R code.
 lines(xfit, yfit, col = "black", lwd = 2) # normal curve in a black colour with line width (lwd) of 2.
 
 ```
@@ -284,7 +285,9 @@ We can see from the histogram that the distribution is approximately normal.
 We can also see if the distribution is approximately normal by using the quantile-quantile, qqnorm() function. The qqnorm() function gives us a line that indicates the correlation between the normal distribution and our sample distribution. Basically, if the black line is roughly straight at a 45-degree angle, then we can say that our data is approximately normally distributed. I will draw a straight blue line at a 45-degrees using qqline() for our comparison.
 
 ```{r}
-qqnorm(na.omit.age)
+# QQ plot of the ages for the Titanic passengers
+qqnorm(na.omit.age, main = "QQ plot of the ages for the Titanic passengers")
+# Add straight blue line for our reference
 qqline(na.omit.age, col = "blue", lwd = 2)
 ```
 
@@ -360,7 +363,7 @@ Note that Mac users should have Xquartz installed onto their computer in order t
 library(rgl) # load rgl package
 ```
 
-We shall again plot age, ticket, and fare. But, this time we will colour by the class. Note that I did not put a main title on this graph because, when you interact with the graph, the title overlaps over the data and it gets hard to interpret.
+We shall again plot age, ticket, and fare. But, this time we will colour by the class. Note that I did not put a main title on this graph because, when you interact with the graph, the title overlaps over the data and it gets difficult to interpret the data.
 
 ```{r}
 # Notice that I am using the factor version of pclass, class in the below plot3d code
