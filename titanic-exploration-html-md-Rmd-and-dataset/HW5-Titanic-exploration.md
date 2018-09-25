@@ -1,11 +1,11 @@
 ---
-title: "HW5-Titanic-exploration"
+title: "HW2-Titanic-exploration"
 output:
     html_document:
         keep_md: true
 ---
 
-# Homework 5: Titanic Exploration
+# Homework 2: Titanic Exploration
 
 ## Table of Contents:
 
