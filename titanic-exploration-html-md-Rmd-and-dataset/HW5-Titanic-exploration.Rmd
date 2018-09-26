@@ -40,6 +40,7 @@ library(tidyverse) # load tidyverse
 library(knitr) # for building tables later on
 library(kableExtra) # load kableExtra package, which I will use for building tables later on
 library(plyr) # load plyr
+library(dplyr) # load dplyr
 ```
 
 Note that plyr is necessary to load after for this project because otherwise when I start to change levels of  categorical variables (titanic$sex levels) later on, we will get an error.
@@ -96,6 +97,19 @@ head(structure(titanic)) # Output: 1,310 x 14 data frame... we could check this 
 
 Finally, the structure() function gives the output of 1,310 x 14. This means that data set has 1,310 rows by 14 columns. The format of the structure() output is similar to the dim() output. 
 
+```{r}
+glimpse(titanic) # glimpse function from dplyr package
+```
+
+The glimpse function from the dplyr package allows us to view the structure of the data set. This is a more organized alternative to the ordinary structure function, which is used below:
+
+```{r}
+str(titanic) # see structure of titanic data set.
+```
+
+
+We will now look at variable types.
+
 As was said in the Internal Discussion forum for Stat545, the typeof function gives the data structures that are specific to R. On the other hand, classes are a little more confusing. In section 2.2.4, the [R Language Definition manual](https://cran.r-project.org/doc/manuals/R-lang.html#Classes) states:
 
 > R has an elaborate class system1, principally controlled via the class attribute. This attribute is a character vector containing the list of classes that an object inherits from. This forms the basis of the “generic methods” functionality in R.
@@ -127,7 +141,7 @@ head(titanic) # shows the top few rows of the Titanic data set
 
 ### Categorical variable exploration
 
-The categorical variable I chose to explore is sex. I can access the data for this variable by typing titanic$sex. 
+The categorical variable I chose to explore is sex. I can access the data for this variable by typing sex. Note I do not have to type titanic$sex because I have attached the titanic data using the attach() function.
 
 We want to find whether there are more male or female passengers. We can use the table function for this categorical variable to see the counts of the males and females.
 
@@ -419,32 +433,49 @@ We can see from the densityplot that the highest frequency of passengers paid un
 I will now colour a density plot of passenger fares by class (ie. a quantitative variable by categorical variable). Note that I will first have to convert pclass to a factor because it is originally an integer (as indicated by typeof and class in the Smell test the data section). In order for ggplot to fill by class, the variable cannot be an integer.
 
 ```{r warning = FALSE}
-class <- as.factor(titanic$pclass) # I first had to convert pclass to factor to get ggplot to fill by class
+class <- as.factor(pclass) # I first had to convert pclass to factor to get ggplot to fill by class
 
 ggplot.fare.class <- ggplot(titanic, aes(fare, group=class, fill=class)) # create variable ggplot.fare.class so we can use this base code for multiple plots
 
-ggplot.fare.class + geom_density() + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares by class") # densityplot of Titanic passenger fares by class
+ggplot.fare.class.density <- ggplot.fare.class + geom_density() + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares by class") # densityplot of Titanic passenger fares by class
 
+ggplot.fare.class.density
 ```
 
 From this densityplot of fares by class, we can see that the majority of people who paid under fifty dollars for a ticket were from first class. This observation makes sense because we would expect that third class passengers paid less than first class passengers. Also, we can see that only the first class passengers had higher fares over 100 dollars.
+
+However, it would be easier to see these observations when our data is side-by-side instead of overlayed as it is in the above densityplot. I will do side-by-side plots for each class below, using ggplot2(). Note the fourth plot for NA is for the NA passenger row in the data set.
+
+```{r}
+ggplot.fare.class.density + facet_grid(~ pclass) + scale_x_log10() # Note I scaled using log because otherwise the plots are very tiny and not easily readable
+```
+
 
 Next, we shall look at a histogram of the fares (quantitative variable), which are coloured by the class of the passengers (categorical variable because there are three classes). Note that the values that were listed as NA or that were just blank were automatically removed. There should be a caution sign to indicate this in R Studio.
 
 ```{r warning = FALSE}
 # histogram of fares coloured by class
-ggplot.fare.class +
+ggplot.fare.class.boxplot <- ggplot.fare.class +
   geom_histogram(bins = 30) + 
   labs(title = "Bar plots of Titanic passenger fares by class")
+
+ggplot.fare.class.boxplot
 ```
 
 We can see that as the fare increases, the number of first class passenger increases. This makes sense because first class passengers were required to pay a higher fare than third class passengers. The luxuries of first class ain't cheap.
+
+Again, it would be easier to see these observations when we have the data side-by-side instead of overlayed as it is in the above boxplots. I will do three side-by-side plots for each class below, using ggplot2(). Again, note the fourth plot for NA is for the NA passenger row in the data set.
+
+```{r}
+ggplot.fare.class.boxplot + facet_grid(~ pclass) + scale_x_log10() # Note I scaled using log because otherwise the plots are very tiny and not easily readable
+```
 
 We can display the plot of Titanic passengers age by class using a jitterplot overlayed on top of a violin plot. As was the case for previous graphs, the missing or non-finite values were removed automatically.
 
 ```{r warning = FALSE}
 # jitterplot overlayed on top of a violin plot
-ggplot(titanic, aes(class,age)) + geom_violin() + 
+ggplot(titanic, aes(class,age)) + 
+  geom_violin(aes(fill = class)) + 
   geom_jitter(alpha = 0.2) + 
   labs(title = "Jitterplots overlayed over violin plots of Titanic passenger age by class")
 ```
