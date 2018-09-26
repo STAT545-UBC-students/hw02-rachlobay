@@ -437,7 +437,7 @@ class <- as.factor(pclass) # I first had to convert pclass to factor to get ggpl
 
 ggplot.fare.class <- ggplot(titanic, aes(fare, group=class, fill=class)) # create variable ggplot.fare.class so we can use this base code for multiple plots
 
-ggplot.fare.class.density <- ggplot.fare.class + geom_density() + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares by class") # densityplot of Titanic passenger fares by class
+ggplot.fare.class.density <- ggplot.fare.class + geom_density(alpha=0.6) + labs(x = "fare", y = "frequency",title = "Densityplot of Titanic passenger fares by class") # densityplot of Titanic passenger fares by class
 
 ggplot.fare.class.density
 ```
@@ -453,24 +453,19 @@ ggplot.fare.class.density + facet_grid(~ pclass) + scale_x_log10() # Note I scal
 
 Next, we shall look at a histogram of the fares (quantitative variable), which are coloured by the class of the passengers (categorical variable because there are three classes). Note that the values that were listed as NA or that were just blank were automatically removed. There should be a caution sign to indicate this in R Studio.
 
-```{r warning = FALSE}
-# histogram of fares coloured by class
-ggplot.fare.class.boxplot <- ggplot.fare.class +
-  geom_histogram(bins = 30) + 
-  labs(title = "Bar plots of Titanic passenger fares by class")
-
-ggplot.fare.class.boxplot
-```
-
-We can see that as the fare increases, the number of first class passenger increases. This makes sense because first class passengers were required to pay a higher fare than third class passengers. The luxuries of first class ain't cheap.
-
 Again, it would be easier to see these observations when we have the data side-by-side instead of overlayed as it is in the above boxplots. I will do three side-by-side plots for each class below, using ggplot2(). Again, note the fourth plot for NA is for the NA passenger row in the data set.
 
-```{r}
-ggplot.fare.class.boxplot + facet_grid(~ pclass) + scale_x_log10() # Note I scaled using log because otherwise the plots are very tiny and not easily readable
+```{r warning = FALSE}
+ggplot.fare.class +
+  geom_histogram(bins = 30) + 
+  labs(title = "Bar plots of Titanic passenger fares by class")+
+  facet_grid(~ pclass) +
+  scale_x_log10() # Note I scaled using log because otherwise the plots are very tiny and not easily readable
 ```
 
-We can display the plot of Titanic passengers age by class using a jitterplot overlayed on top of a violin plot. As was the case for previous graphs, the missing or non-finite values were removed automatically.
+We can see that as first class passengers have the highest fares on average. This makes sense because first class passengers were required to pay a higher fare than third class passengers. The luxuries of first class ain't cheap.
+
+Next, we can display the plot of Titanic passengers age by class using a jitterplot overlayed on top of a violin plot. As was the case for previous graphs, the missing or non-finite values were removed automatically.
 
 ```{r warning = FALSE}
 # jitterplot overlayed on top of a violin plot
@@ -537,7 +532,7 @@ titanic %>%
   filter(pclass == "1" & survived.yes.no == "yes") %>% # filter by survived and first class rows.
   ggplot(aes(age, fare, colour = sex)) + 
   geom_point() +
-  labs(title = "Scatterplot of first class passengers who survived coloured by sex", x = "Age", y = "Fare")
+  labs(title = "Scatterplot of fares of first class passengers who survived coloured by sex", x = "Age", y = "Fare")
 
 ```
  
@@ -557,7 +552,7 @@ survival.class3.bysex <- titanic %>%
   filter(pclass == "3" & survived.yes.no == "yes") %>% # filter by survived and third class rows.
   ggplot(aes(age, fare, colour = sex)) + 
   geom_point() + 
-  labs(title = "Scatterplot of third class passengers who survived coloured by sex", x = "Age", y = "Fare")
+  labs(title = "Scatterplot of fares of third class passengers who survived coloured by sex", x = "Age", y = "Fare")
 
 survival.class3.bysex 
 ```
